@@ -3,26 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jobify</title>
+  <title>PWP_jobhunt — Full Automation Console</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.7.13/dist/browsers/sodium.min.js"></script>
   <style>
     :root {
-      /* 100% Pure Warm Beach & Sunset Sand Theme (Zero Blue) */
-      --bg-sand-light: #faf6ee;
-      --card-bg: rgba(255, 253, 248, 0.88);
-      --card-border: rgba(217, 119, 6, 0.22);
-      --card-border-hover: rgba(217, 119, 6, 0.55);
-      --accent-sand: #d97706;  /* Warm golden beach sand */
-      --accent-palm: #059669;  /* Fresh tropical palm emerald */
-      --accent-coral: #ea580c; /* Sunset terracotta coral */
-      --accent-glow: rgba(217, 119, 6, 0.18);
-      --text-main: #291e14;    /* Rich deep teak wood brown - high contrast & super readable */
-      --text-muted: #523e2b;   /* Warm coastal timber text */
-      --text-dim: #7c6551;     /* Warm sand stone text */
-      --input-bg: #ffffff;
-      --chip-bg: #fef3c7;      /* Warm golden sand chip tint */
-      --chip-border: rgba(217, 119, 6, 0.35);
-      --code-bg: #1c120c;      /* Deep espresso sand dark code box (Zero Blue) */
-      --code-bar-bg: #342013;  /* Dark warm teak wood top bar */
+      --bg: #0f1115;
+      --card-bg: #171a21;
+      --border: #262b36;
+      --text: #e6e8ec;
+      --muted: #8b93a3;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --success: #10b981;
+      --input-bg: #111318;
     }
 
     * {
@@ -32,1842 +27,1173 @@
     }
 
     body {
-      background-color: var(--bg-sand-light);
-      background-image: 
-        radial-gradient(at 10% 10%, rgba(254, 240, 138, 0.5) 0px, transparent 50%),
-        radial-gradient(at 90% 15%, rgba(254, 215, 170, 0.5) 0px, transparent 50%),
-        radial-gradient(at 85% 85%, rgba(253, 186, 116, 0.35) 0px, transparent 50%),
-        radial-gradient(at 15% 85%, rgba(167, 243, 208, 0.35) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-main);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       font-size: 14px;
       line-height: 1.5;
       min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
+      padding: 40px 20px;
     }
 
-    /* Floating Golden Sun & Sunset Glow Orbs */
-    body::before {
-      content: "";
-      position: fixed;
-      top: -200px;
-      left: 10%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(251, 191, 36, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
-      pointer-events: none;
-      z-index: 0;
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
     }
 
-    body::after {
-      content: "";
-      position: fixed;
-      bottom: -200px;
-      right: 10%;
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(234, 88, 12, 0.15) 0%, rgba(16, 185, 129, 0.12) 45%, rgba(255, 255, 255, 0) 75%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Header Styling */
     header {
-      background: rgba(255, 253, 246, 0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--card-border);
-      padding: 18px 32px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      margin-bottom: 32px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 20px rgba(120, 53, 15, 0.05);
-    }
-
-    .brand-title {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #78350f 0%, #d97706 40%, #ea580c 80%, #059669 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: flex;
       align-items: center;
-      gap: 10px;
     }
 
-    .brand-title::before {
-      content: "";
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      background: linear-gradient(135deg, var(--accent-sand), var(--accent-coral));
-      border-radius: 50%;
-      box-shadow: 0 0 12px var(--accent-sand);
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
 
     .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fef3c7;
-      border: 1px solid rgba(217, 119, 6, 0.35);
-      color: #78350f;
-      padding: 5px 14px;
-      border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.02em;
-      transition: all 0.2s ease;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(139, 147, 163, 0.15);
+      color: var(--muted);
+      border: 1px solid var(--border);
     }
 
-    .status-badge:hover {
-      background: #fde68a;
-      border-color: #d97706;
-      box-shadow: 0 2px 10px rgba(217, 119, 6, 0.15);
+    .status-badge.running {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.3);
     }
 
-    .pulse-dot {
-      width: 7px;
-      height: 7px;
-      background-color: #d97706;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #d97706;
-      animation: pulse 2s infinite;
+    .status-badge.stopped {
+      background: rgba(139, 147, 163, 0.15);
+      color: var(--muted);
+      border-color: var(--border);
     }
 
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.3); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    /* Main Layout Grid */
-    .main-layout {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 28px;
-      max-width: 1480px;
-      margin: 0 auto;
-      padding: 32px 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    @media (max-width: 1024px) {
-      .main-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .form-column {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    /* Glassmorphism Cards */
-    .form-section {
+    .section {
       background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 24px;
-      box-shadow: 0 12px 32px rgba(120, 53, 15, 0.06), 0 2px 6px rgba(0, 0, 0, 0.02);
-      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 24px;
     }
 
-    .form-section:hover {
-      border-color: var(--card-border-hover);
-      box-shadow: 0 16px 40px rgba(120, 53, 15, 0.11), 0 0 20px rgba(217, 119, 6, 0.1);
-      transform: translateY(-2px);
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
     }
 
-    .section-heading {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      letter-spacing: -0.01em;
-    }
-
-    .section-heading .step-num {
-      background: #fef3c7;
-      border: 1px solid rgba(217, 119, 6, 0.4);
-      color: #78350f;
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-weight: 700;
-    }
-
-    .form-field {
+    .form-group {
       margin-bottom: 18px;
     }
 
-    .form-field:last-child {
+    .form-group:last-child {
       margin-bottom: 0;
-    }
-
-    .label-with-link {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
     }
 
     label {
       display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .help-link {
       font-size: 12px;
-      color: var(--accent-sand);
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .help-link:hover {
-      color: var(--accent-coral);
-      text-decoration: underline;
-    }
-
-    .field-hint {
-      font-size: 11px;
-      color: var(--text-dim);
-      font-weight: normal;
-      margin-left: 6px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
     }
 
     input[type="text"],
+    input[type="password"],
     input[type="number"],
     select {
       width: 100%;
       background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: var(--text-main);
-      font-size: 13px;
-      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 14px;
       outline: none;
-      transition: all 0.25s ease-out;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      transition: border-color 0.15s ease;
     }
 
     input[type="text"]:focus,
+    input[type="password"]:focus,
     input[type="number"]:focus,
     select:focus {
-      border-color: var(--accent-sand);
-      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
-      background: #ffffff;
+      border-color: var(--accent);
     }
 
-    input:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      background: #fef9c3;
-    }
-
-    .input-row {
-      display: flex;
-      gap: 14px;
-    }
-
-    .input-row > div {
-      flex: 1;
-    }
-
-    .checkbox-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--text-main);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .checkbox-label input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--accent-sand);
-      cursor: pointer;
-    }
-
-    .warning-text {
+    .field-help {
       font-size: 12px;
-      color: #78350f;
-      margin-top: 8px;
-      background: #fffbe6;
-      border: 1px solid #fde047;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-weight: 500;
+      color: var(--muted);
+      margin-top: 6px;
     }
 
-    /* Tag / Chip Component */
-    .tag-container {
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
+    .field-help a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .field-help a:hover {
+      text-decoration: underline;
+    }
+
+    /* Resume drop area */
+    .dropzone {
+      border: 2px dashed var(--border);
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--input-bg);
+      transition: border-color 0.15s ease;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent);
+    }
+
+    .dropzone-text {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .file-name {
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 6px;
+      font-size: 13px;
+    }
+
+    /* Tag Editor */
+    .tag-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      min-height: 44px;
+      gap: 6px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      min-height: 42px;
       align-items: center;
-      transition: border-color 0.25s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
 
     .tag-container:focus-within {
-      border-color: var(--accent-sand);
-      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
+      border-color: var(--accent);
     }
 
-    .tag-chip {
-      background: var(--chip-bg);
-      border: 1px solid var(--chip-border);
-      color: #78350f;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
+    .tag {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+      padding: 2px 8px;
+      border-radius: 4px;
       font-size: 12px;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
+      gap: 6px;
     }
 
-    .tag-chip:hover {
-      border-color: var(--accent-sand);
-      background: #fde68a;
+    .tag.not-interested {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
     }
 
-    .tag-chip-remove {
-      background: none;
-      border: none;
-      color: #78350f;
+    .tag-remove {
       cursor: pointer;
-      font-size: 14px;
-      line-height: 1;
-      padding: 0;
-      transition: color 0.15s ease;
+      font-weight: bold;
+      opacity: 0.7;
     }
 
-    .tag-chip-remove:hover {
-      color: var(--accent-coral);
+    .tag-remove:hover {
+      opacity: 1;
     }
 
-    .tag-input-element {
+    .tag-input {
       border: none !important;
       background: transparent !important;
-      padding: 4px 6px !important;
+      padding: 4px !important;
       flex: 1;
-      min-width: 140px;
-      box-shadow: none !important;
+      min-width: 120px;
+      color: var(--text);
+      outline: none;
     }
 
-    .presets-bar {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
+    /* Schedule timepicker & days */
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
-    .preset-label {
-      font-size: 11px;
-      color: var(--text-dim);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .preset-chip-btn {
-      background: #ffffff;
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }
-
-    .preset-chip-btn:hover {
-      border-color: var(--accent-sand);
-      color: #78350f;
-      background: #fef3c7;
-    }
-
-    /* Resume Upload Zone */
-    .upload-zone {
-      border: 2px dashed rgba(217, 119, 6, 0.35);
-      border-radius: 10px;
-      padding: 24px;
-      text-align: center;
-      background: rgba(254, 243, 199, 0.4);
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-
-    .upload-zone:hover, .upload-zone.dragover {
-      border-color: #d97706;
-      background: #fef3c7;
-      box-shadow: 0 4px 16px rgba(217, 119, 6, 0.12);
-    }
-
-    .upload-icon {
-      font-size: 28px;
-      margin-bottom: 6px;
-    }
-
-    .upload-title {
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 13.5px;
-    }
-
-    .upload-sub {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    /* 12-Hour Time Control */
-    .time-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .time-control select.select-hour,
-    .time-control select.select-ampm {
-      width: 80px;
-    }
-
-    .time-control input.input-minute {
-      width: 75px;
-    }
-
-    .tz-label {
-      font-size: 12px;
-      color: var(--accent-palm);
-      margin-left: 6px;
-      font-weight: 600;
-    }
-
-    /* Weekdays Layout */
-    .weekdays-flex {
+    .days-grid {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    .weekday-chk-label {
-      background: #ffffff;
-      border: 1px solid var(--card-border);
+    .day-checkbox {
+      display: none;
+    }
+
+    .day-label {
       padding: 6px 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
+      color: var(--muted);
       cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .day-checkbox:checked + .day-label {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* Thresholds */
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .checkbox-inline {
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .weekday-chk-label:hover {
-      border-color: var(--accent-sand);
-      color: var(--text-main);
-    }
-
-    .weekday-chk-label input:checked + span,
-    .weekday-chk-label:has(input:checked) {
-      border-color: var(--accent-sand);
-      background: #fef3c7;
-      color: #78350f;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.12);
-    }
-
-    /* Right Output Column (Sticky) */
-    .output-column {
-      position: sticky;
-      top: 96px;
-      align-self: start;
-    }
-
-    .output-panel {
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 12px 32px rgba(120, 53, 15, 0.08);
-    }
-
-    .output-panel-heading {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .code-block-wrapper {
-      margin-bottom: 20px;
-    }
-
-    .code-block-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--code-bar-bg);
-      border: 1px solid rgba(217, 119, 6, 0.4);
-      border-bottom: none;
-      padding: 8px 14px;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
-
-    .code-block-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #fde68a;
-      font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
-    }
-
-    .copy-button {
-      background: rgba(251, 191, 36, 0.25);
-      border: 1px solid rgba(251, 191, 36, 0.5);
-      color: #fde68a;
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .copy-button:hover {
-      background: #fbbf24;
-      color: #291e14;
-    }
-
-    pre {
-      background-color: var(--code-bg);
-      border: 1px solid rgba(217, 119, 6, 0.4);
-      border-bottom-left-radius: 10px;
-      border-bottom-right-radius: 10px;
-      padding: 16px;
-      overflow-x: auto;
-      margin: 0;
-      max-height: 240px;
-    }
-
-    code {
-      font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
-      font-size: 12.5px;
-      color: #fffdf7;
-      line-height: 1.6;
-    }
-
-    .cron-check-note {
-      font-size: 12px;
-      color: #064e3b;
+      gap: 8px;
       margin-top: 8px;
-      padding: 8px 12px;
-      background: #ecfdf5;
-      border-left: 3px solid var(--accent-palm);
-      border-radius: 4px;
-      font-weight: 500;
-    }
-
-    /* Checklist */
-    .checklist-section {
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--card-border);
-    }
-
-    .checklist-section h4 {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 12px;
-    }
-
-    .checklist-ol {
-      padding-left: 20px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .checklist-ol li {
-      margin-bottom: 10px;
-    }
-
-    .checklist-ol code {
-      font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
-      color: #78350f;
-      background-color: #fef3c7;
-      padding: 2px 6px;
-      border-radius: 4px;
       font-size: 12px;
-      border: 1px solid rgba(217, 119, 6, 0.3);
-    }
-
-    .advanced-toggle {
-      font-size: 12px;
-      color: var(--accent-palm);
+      color: var(--muted);
       cursor: pointer;
-      margin-top: 10px;
-      display: inline-block;
-      text-decoration: none;
-      transition: color 0.2s ease;
-      font-weight: 600;
     }
 
-    .advanced-toggle:hover {
-      color: var(--accent-sand);
+    /* Actions */
+    .actions-area {
+      margin-top: 32px;
+      text-align: center;
     }
 
-    /* Spatial Floating Error / Limit Popup Toast */
-    .error-popup-modal {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 1000;
-      max-width: 440px;
-      width: calc(100% - 48px);
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid #ea580c;
-      border-radius: 12px;
-      box-shadow: 0 16px 40px rgba(234, 88, 12, 0.25);
-      padding: 16px;
-      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .error-popup-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .error-popup-icon {
-      font-size: 18px;
-    }
-
-    .error-popup-title {
-      font-weight: 700;
-      font-size: 14px;
-      color: #c2410c;
-      flex: 1;
-    }
-
-    .error-popup-close {
-      background: none;
-      border: none;
-      color: #7c6551;
-      font-size: 18px;
-      cursor: pointer;
-      line-height: 1;
-    }
-
-    .error-popup-close:hover {
-      color: #291e14;
-    }
-
-    .error-popup-body {
-      font-size: 12.5px;
-      color: #523e2b;
-      line-height: 1.5;
-      margin-bottom: 12px;
-    }
-
-    .error-popup-footer {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .error-popup-btn {
-      background: #ffedd5;
-      border: 1px solid #fdba74;
-      color: #9a3412;
-      padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .error-popup-btn:hover {
-      background: #ea580c;
+    .btn-primary {
+      width: 100%;
+      padding: 12px 24px;
+      background: var(--accent);
       color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
     }
 
-    /* Scrollbars */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    .btn-primary:hover {
+      background: var(--accent-hover);
     }
-    ::-webkit-scrollbar-track {
-      background: #faf6ee;
+
+    .btn-primary.stop {
+      background: var(--danger);
     }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(217, 119, 6, 0.35);
-      border-radius: 4px;
+
+    .btn-primary.stop:hover {
+      background: #dc2626;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(217, 119, 6, 0.65);
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status-text {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .inline-error {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <div class="title">PWP_jobhunt Console</div>
+      <div id="statusBadge" class="status-badge stopped">Stopped</div>
+    </header>
 
-  <header>
-    <div class="brand-title">Jobify</div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-      <div class="status-badge">
-        <span class="pulse-dot"></span> 100% Client-Side Automation Console
+    <!-- 1. LLM Credentials -->
+    <div class="section">
+      <div class="section-title">LLM Credentials</div>
+      <div class="form-group">
+        <label for="llmProvider">Service</label>
+        <select id="llmProvider">
+          <option value="gemini">Gemini (Google AI Studio)</option>
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="openai-compatible">Other (Groq / OpenRouter / OpenAI-compatible)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="llmApiKey">API Key</label>
+        <input type="password" id="llmApiKey" placeholder="Paste your API key" autocomplete="off">
+      </div>
+      <div class="form-group" id="baseUrlGroup" style="display: none;">
+        <label for="llmBaseUrl">Base URL</label>
+        <input type="text" id="llmBaseUrl" placeholder="https://openrouter.ai/api/v1">
       </div>
     </div>
-  </header>
 
-  <!-- Error / Limit Popup Toast -->
-  <div id="error_popup" class="error-popup-modal" style="display: none;">
-    <div class="error-popup-header">
-      <span class="error-popup-icon">⚠️</span>
-      <span class="error-popup-title" id="popup_title">Error / Limit Alert</span>
-      <button class="error-popup-close" onclick="closeErrorPopup()">&times;</button>
+    <!-- 2. Resume & Tag Seeding -->
+    <div class="section">
+      <div class="section-title">Resume & Title Preferences</div>
+      <div class="form-group">
+        <label>Resume File (.pdf, .txt, .md)</label>
+        <div class="dropzone" id="dropzone">
+          <div class="dropzone-text">Click or drag resume file here to upload</div>
+          <div class="file-name" id="fileName"></div>
+        </div>
+        <input type="file" id="resumeFileInput" accept=".pdf,.txt,.md" style="display: none;">
+      </div>
+
+      <div class="form-group">
+        <label for="interestedTagsInput">Interested in</label>
+        <div class="tag-container" id="interestedContainer">
+          <input type="text" id="interestedTagsInput" class="tag-input" placeholder="Add target title and press Enter">
+        </div>
+        <div class="inline-error" id="interestedError">Specify at least one target title interest.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="notInterestedTagsInput">Not interested in</label>
+        <div class="tag-container" id="notInterestedContainer">
+          <input type="text" id="notInterestedTagsInput" class="tag-input" placeholder="Add exclusion title and press Enter">
+        </div>
+      </div>
     </div>
-    <div class="error-popup-body" id="popup_message">An error or input boundary limit was encountered.</div>
-    <div class="error-popup-footer">
-      <button class="error-popup-btn" onclick="closeErrorPopup()">Dismiss</button>
+
+    <!-- 3. Schedule -->
+    <div class="section">
+      <div class="section-title">Daily Schedule (IST)</div>
+      <div class="schedule-grid">
+        <div>
+          <label for="schedHour">Hour</label>
+          <select id="schedHour">
+            <option value="12">12</option>
+            <option value="1">01</option>
+            <option value="2">02</option>
+            <option value="3">03</option>
+            <option value="4">04</option>
+            <option value="5">05</option>
+            <option value="6" selected>06</option>
+            <option value="7">07</option>
+            <option value="8">08</option>
+            <option value="9">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+          </select>
+        </div>
+        <div>
+          <label for="schedMinute">Minute</label>
+          <select id="schedMinute">
+            <option value="0" selected>00</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+          </select>
+        </div>
+        <div>
+          <label for="schedAmpm">AM / PM</label>
+          <select id="schedAmpm">
+            <option value="AM" selected>AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Active Days</label>
+        <div class="days-grid">
+          <input type="checkbox" id="day-1" class="day-checkbox" value="1" checked><label for="day-1" class="day-label">Mon</label>
+          <input type="checkbox" id="day-2" class="day-checkbox" value="2" checked><label for="day-2" class="day-label">Tue</label>
+          <input type="checkbox" id="day-3" class="day-checkbox" value="3" checked><label for="day-3" class="day-label">Wed</label>
+          <input type="checkbox" id="day-4" class="day-checkbox" value="4" checked><label for="day-4" class="day-label">Thu</label>
+          <input type="checkbox" id="day-5" class="day-checkbox" value="5" checked><label for="day-5" class="day-label">Fri</label>
+          <input type="checkbox" id="day-6" class="day-checkbox" value="6"><label for="day-6" class="day-label">Sat</label>
+          <input type="checkbox" id="day-0" class="day-checkbox" value="0"><label for="day-0" class="day-label">Sun</label>
+        </div>
+        <div class="inline-error" id="daysError">Select at least one active day.</div>
+      </div>
+    </div>
+
+    <!-- 4. Matching Knobs -->
+    <div class="section">
+      <div class="section-title">Matching & Digest Settings</div>
+      <div class="row-2">
+        <div class="form-group">
+          <label for="scoreThreshold">Minimum Match Score (0-10)</label>
+          <input type="number" id="scoreThreshold" min="0" max="10" step="0.5" value="7.0">
+        </div>
+        <div class="form-group">
+          <label for="maxPerDigest">Max Jobs per Email</label>
+          <input type="number" id="maxPerDigest" min="1" max="20" value="5">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="maxAgeDays">Max Job Age (Days)</label>
+        <input type="number" id="maxAgeDays" min="1" max="180" value="30">
+        <label class="checkbox-inline">
+          <input type="checkbox" id="noAgeLimit"> No age limit
+        </label>
+      </div>
+    </div>
+
+    <!-- 5. Email Config -->
+    <div class="section">
+      <div class="section-title">Gmail Delivery</div>
+      <div class="form-group">
+        <label for="gmailAddress">Gmail Address</label>
+        <input type="text" id="gmailAddress" placeholder="your.email@gmail.com">
+      </div>
+      <div class="form-group">
+        <label for="gmailAppPassword">Gmail App Password</label>
+        <input type="password" id="gmailAppPassword" placeholder="16-character App Password" autocomplete="off">
+        <div class="field-help">Generate one in your <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">Google Account App Passwords</a> page.</div>
+      </div>
+    </div>
+
+    <!-- 6. GitHub Repository & Token -->
+    <div class="section">
+      <div class="section-title">GitHub Automation Target</div>
+      <div class="row-2">
+        <div class="form-group">
+          <label for="ghOwner">Repo Owner / Username</label>
+          <input type="text" id="ghOwner" placeholder="username">
+        </div>
+        <div class="form-group">
+          <label for="ghRepo">Repository Name</label>
+          <input type="text" id="ghRepo" value="PWP_jobhunt">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="ghToken">Fine-Grained Personal Access Token</label>
+        <input type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off">
+        <div class="field-help">Token requires repository permissions: <strong>Contents: Read & write</strong>, <strong>Actions: Read & write</strong>, <strong>Secrets: Read & write</strong>. <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">Create fine-grained token</a></div>
+      </div>
+    </div>
+
+    <!-- 7. Start / Stop Action -->
+    <div class="actions-area">
+      <button id="toggleBtn" class="btn-primary">Start</button>
+      <div id="statusLine" class="status-text">Stopped</div>
     </div>
   </div>
 
-  <main class="main-layout">
-    
-    <!-- LEFT FORM COLUMN -->
-    <div class="form-column">
-      
-      <!-- SECTION 1: EMAIL -->
-      <div class="form-section">
-        <div class="section-heading"><span class="step-num">01</span> Email Delivery</div>
-        
-        <div class="form-field">
-          <label for="smtp_user">Gmail Address</label>
-          <input type="text" id="smtp_user" value="your-email@gmail.com" placeholder="you@gmail.com">
-        </div>
-
-        <div class="form-field">
-          <label class="checkbox-label">
-            <input type="checkbox" id="chk_custom_mailto">
-            Send digest to a different address
-          </label>
-        </div>
-
-        <div class="form-field" id="mailto_field_wrapper" style="display: none;">
-          <label for="mail_to">Recipient Address (MAIL_TO)</label>
-          <input type="text" id="mail_to" value="your-email@gmail.com" placeholder="recipient@gmail.com">
-        </div>
-
-        <div class="form-field">
-          <div class="label-with-link">
-            <label for="smtp_pass">Gmail App Password</label>
-            <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" class="help-link">
-              Don't have one? Generate App Password ↗
-            </a>
-          </div>
-          <input type="text" id="smtp_pass" placeholder="xxxx xxxx xxxx xxxx" autocomplete="off">
-          <div id="smtp_pass_warn" class="warning-text" style="display: none;"></div>
-        </div>
-
-        <div class="form-field" style="margin-top: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-          <button type="button" class="preset-chip-btn" id="btn_save_settings" onclick="saveSettingsToLocalStorage(true)" style="background: var(--accent-sand); color: #ffffff; border: none; font-size: 13px; font-weight: 700; padding: 9px 20px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25); transition: all 0.2s ease;">
-            💾 Save App Password & Settings
-          </button>
-          <span id="save_status_msg" style="font-size: 12.5px; color: var(--accent-palm); font-weight: 700; display: none;">
-            ✓ Password & Settings Saved!
-          </span>
-        </div>
-      </div>
-
-      <!-- SECTION 2: LLM PROVIDER -->
-      <div class="form-section">
-        <div class="section-heading"><span class="step-num">02</span> LLM Provider</div>
-
-        <div class="form-field">
-          <label for="api_key_val">Gemini API Key → GEMINI_API_KEY</label>
-          <input type="text" id="api_key_val" placeholder="paste your Gemini API key">
-        </div>
-
-        <div class="input-row form-field">
-          <div>
-            <label for="screen_model">Screening Model</label>
-            <input type="text" id="screen_model" value="gemini-3.5-flash-lite">
-          </div>
-          <div>
-            <label for="draft_model">Drafting Model</label>
-            <input type="text" id="draft_model" value="gemini-3.6-flash">
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION 3: FILTERS -->
-      <div class="form-section">
-        <div class="section-heading"><span class="step-num">03</span> Filters (config.yaml)</div>
-
-        <div class="form-field">
-          <label>Include Titles Regex</label>
-          <div class="tag-container" id="includes_chip_box">
-            <input type="text" class="tag-input-element" id="include_input" placeholder="Type regex & press Enter">
-          </div>
-          <div class="presets-bar" id="includes_presets"></div>
-        </div>
-
-        <div class="form-field">
-          <label>Exclude Titles Regex</label>
-          <div class="tag-container" id="excludes_chip_box">
-            <input type="text" class="tag-input-element" id="exclude_input" placeholder="Type regex & press Enter">
-          </div>
-          <div class="presets-bar" id="excludes_presets"></div>
-        </div>
-
-        <div class="form-field">
-          <label>Locations</label>
-          <div class="tag-container" id="locations_chip_box">
-            <input type="text" class="tag-input-element" id="location_input" placeholder="Type location & press Enter">
-          </div>
-          <div class="presets-bar" id="locations_presets"></div>
-        </div>
-
-        <div class="form-field">
-          <label class="checkbox-label">
-            <input type="checkbox" id="allow_remote" checked>
-            Allow remote postings
-          </label>
-        </div>
-
-        <div class="input-row form-field">
-          <div>
-            <label for="score_threshold">Score Threshold</label>
-            <input type="number" id="score_threshold" value="7" step="0.5" min="0" max="10">
-          </div>
-          <div>
-            <label for="max_per_digest">Max Per Digest</label>
-            <input type="number" id="max_per_digest" value="5" min="1">
-          </div>
-          <div>
-            <label for="max_age_days">Max Age (Days)</label>
-            <input type="number" id="max_age_days" value="30" min="1">
-            <div style="margin-top: 6px;">
-              <label class="checkbox-label" style="font-size: 11px;">
-                <input type="checkbox" id="chk_no_limit">
-                no limit
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION 4: SCHEDULE -->
-      <div class="form-section">
-        <div class="section-heading"><span class="step-num">04</span> Schedule</div>
-
-        <div class="form-field">
-          <label>Daily Run Time</label>
-          <div class="time-control">
-            <select id="time_hour" class="select-hour">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6" selected>6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-            </select>
-            <span>:</span>
-            <input type="number" id="time_minute" class="input-minute" value="00" min="0" max="59" placeholder="00">
-            <select id="time_ampm" class="select-ampm">
-              <option value="AM" selected>AM</option>
-              <option value="PM">PM</option>
-            </select>
-            <span class="tz-label">Time is in IST (UTC+5:30)</span>
-          </div>
-        </div>
-
-        <div class="form-field">
-          <label>Active Days</label>
-          <div class="weekdays-flex">
-            <label class="weekday-chk-label"><input type="checkbox" id="chk_day_1" value="1" checked> Mon</label>
-            <label class="weekday-chk-label"><input type="checkbox" id="chk_day_2" value="2" checked> Tue</label>
-            <label class="weekday-chk-label"><input type="checkbox" id="chk_day_3" value="3" checked> Wed</label>
-            <label class="weekday-chk-label"><input type="checkbox" id="chk_day_4" value="4" checked> Thu</label>
-            <label class="weekday-chk-label"><input type="checkbox" id="chk_day_5" value="5" checked> Fri</label>
-            <label class="weekday-chk-label"><input type="checkbox" id="chk_day_6" value="6"> Sat</label>
-            <label class="weekday-chk-label"><input type="checkbox" id="chk_day_0" value="0"> Sun</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION 5: TARGET COMPANY ATS BOARDS -->
-      <div class="form-section">
-        <div class="section-heading"><span class="step-num">05</span> Target Companies (companies.yaml)</div>
-
-        <div class="form-field">
-          <label>Paste Board URL or Slug <span class="field-hint">(Auto-parses greenhouse, lever, ashby)</span></label>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="board_url_input" placeholder="e.g. boards.greenhouse.io/stripe or jobs.lever.co/netlify">
-            <button type="button" class="btn-action" onclick="parseAndAddCompanyBoard()">+ Add Board</button>
-          </div>
-        </div>
-
-        <div class="input-row form-field">
-          <div>
-            <label for="board_ats_select">ATS Vendor</label>
-            <select id="board_ats_select">
-              <option value="auto">Auto-Detect</option>
-              <option value="greenhouse">greenhouse</option>
-              <option value="lever">lever</option>
-              <option value="ashby">ashby</option>
-            </select>
-          </div>
-          <div>
-            <label for="board_slug_input">Slug</label>
-            <input type="text" id="board_slug_input" placeholder="e.g. stripe">
-          </div>
-          <div>
-            <label for="board_name_input">Company Name</label>
-            <input type="text" id="board_name_input" placeholder="e.g. Stripe">
-          </div>
-        </div>
-
-        <div class="form-field">
-          <label>Active Companies List</label>
-          <div class="tag-container" id="companies_chip_box"></div>
-          <div class="presets-bar" id="companies_presets"></div>
-        </div>
-        
-        <div class="warning-text" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25); color: #34d399;">
-          💡 <strong>Slug Resilience:</strong> Companies migrate between ATS vendors. A dead slug prints an HTTP status and returns <code>[]</code> — it never kills the daily run.
-        </div>
-      </div>
-
-      <!-- SECTION 6: RESUME UPLOAD & PROFILE JSON -->
-      <div class="form-section">
-        <div class="section-heading"><span class="step-num">06</span> Resume Upload & PROFILE_JSON</div>
-
-        <div class="form-field">
-          <label>Upload Resume File <span class="field-hint">(PDF, TXT, MD, or JSON)</span></label>
-          <div class="upload-zone" id="resume_dropzone" onclick="document.getElementById('resume_file_input').click()">
-            <div class="upload-icon">📄</div>
-            <div class="upload-title">Click or Drop Resume File Here</div>
-            <div class="upload-sub" id="resume_filename_status">Select a file to extract text & generate PROFILE_JSON</div>
-          </div>
-          <input type="file" id="resume_file_input" style="display: none;" accept=".pdf,.txt,.md,.json">
-        </div>
-
-        <div class="form-field">
-          <label for="profile_json_editor">PROFILE_JSON Content / Candidate Resume Schema</label>
-          <textarea id="profile_json_editor" spellcheck="false" placeholder='{"name": "Your Name", "core_skills": ["Python", "Backend"], "target_titles": ["Software Engineer"]}'></textarea>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- RIGHT OUTPUT COLUMN -->
-    <div class="output-column">
-      <div class="output-panel">
-        <div class="output-panel-heading">
-          <span>Generated Configuration Output</span>
-          <button type="button" onclick="saveSettingsToLocalStorage(true)" style="background: var(--accent-sand); color: #ffffff; border: none; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 6px; cursor: pointer;">💾 Save All Settings</button>
-        </div>
-
-        <!-- BLOCK 1: .env -->
-        <div class="code-block-wrapper">
-          <div class="code-block-bar">
-            <span class="code-block-title">.env</span>
-            <div style="display: flex; gap: 6px;">
-              <button class="copy-button" onclick="copyText('env_out', this)">Copy</button>
-              <button class="copy-button" style="background: var(--accent-palm); border-color: var(--accent-palm); color: #ffffff;" onclick="downloadFile('.env', 'env_out')">📥 Download .env</button>
-            </div>
-          </div>
-          <pre><code id="env_out"></code></pre>
-        </div>
-
-        <!-- BLOCK 2: config.yaml filters -->
-        <div class="code-block-wrapper">
-          <div class="code-block-bar">
-            <span class="code-block-title">config.yaml (filters)</span>
-            <div style="display: flex; gap: 6px;">
-              <button class="copy-button" onclick="copyText('yaml_out', this)">Copy</button>
-              <button class="copy-button" style="background: var(--accent-palm); border-color: var(--accent-palm); color: #ffffff;" onclick="downloadFile('config.yaml', 'yaml_out')">📥 Download config.yaml</button>
-            </div>
-          </div>
-          <pre><code id="yaml_out"></code></pre>
-        </div>
-
-        <!-- BLOCK 3: companies.yaml -->
-        <div class="code-block-wrapper">
-          <div class="code-block-bar">
-            <span class="code-block-title">companies.yaml</span>
-            <div style="display: flex; gap: 6px;">
-              <button class="copy-button" onclick="copyText('companies_out', this)">Copy</button>
-              <button class="copy-button" style="background: var(--accent-palm); border-color: var(--accent-palm); color: #ffffff;" onclick="downloadFile('companies.yaml', 'companies_out')">📥 Download companies.yaml</button>
-            </div>
-          </div>
-          <pre><code id="companies_out"></code></pre>
-        </div>
-
-        <!-- BLOCK 4: cron replacement line -->
-        <div class="code-block-wrapper">
-          <div class="code-block-bar">
-            <span class="code-block-title">.github/workflows/daily.yml (cron line)</span>
-            <button class="copy-button" onclick="copyText('cron_out', this)">Copy</button>
-          </div>
-          <pre><code id="cron_out"></code></pre>
-          <div class="cron-check-note" id="cron_human_check"></div>
-        </div>
-
-        <!-- BLOCK 5: PROFILE_JSON Secret -->
-        <div class="code-block-wrapper">
-          <div class="code-block-bar">
-            <span class="code-block-title">PROFILE_JSON (GitHub Secret)</span>
-            <div style="display: flex; gap: 6px;">
-              <button class="copy-button" onclick="copyText('profile_out', this)">Copy</button>
-              <button class="copy-button" style="background: var(--accent-palm); border-color: var(--accent-palm); color: #ffffff;" onclick="downloadFile('profile.json', 'profile_out')">📥 Download profile.json</button>
-            </div>
-          </div>
-          <pre><code id="profile_out"></code></pre>
-        </div>
-
-        <!-- SECTION 4: CHECKLIST -->
-        <div class="checklist-section">
-          <h4>Deployment Checklist</h4>
-          <ol class="checklist-ol">
-            <li>Paste the generated <code>.env</code> content into your local <code>.env</code> file.</li>
-            <li>Paste the generated <code>filters:</code> content into your <code>config.yaml</code> file.</li>
-            <li>Paste the generated <code>companies:</code> list into your <code>companies.yaml</code> file.</li>
-            <li>In <code>.github/workflows/daily.yml</code>, replace the <code>- cron:</code> line with the generated line.</li>
-            <li>In your GitHub repo (Settings → Secrets and variables → Actions), add these Secrets: <code id="secret_key_name_checklist">GEMINI_API_KEY</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>MAIL_TO</code>, and <code>PROFILE_JSON</code>.</li>
-            <li id="checklist_email_note">This is what makes GitHub Actions run your daily job search automatically on schedule. Nothing on this page sends an email or talks to any API.</li>
-          </ol>
-        </div>
-
-      </div>
-    </div>
-
-  </main>
-
   <script>
-    // Popup Error Modal Functions
-    function showErrorPopup(title, message) {
-      const popup = document.getElementById('error_popup');
-      document.getElementById('popup_title').textContent = title;
-      document.getElementById('popup_message').textContent = message;
-      popup.style.display = 'block';
+    // State management
+    const state = {
+      llm: { provider: 'gemini', apiKey: '', baseUrl: '' },
+      resume: { fileName: '', rawText: '' },
+      profile: null,
+      tags: { interested: [], notInterested: [] },
+      companies: [],
+      schedule: { hour: 6, minute: 0, ampm: 'AM', days: [1, 2, 3, 4, 5] },
+      thresholds: { scoreThreshold: 7.0, maxPerDigest: 5, maxAgeDays: 30, noLimit: false },
+      email: { gmailAddress: '', appPassword: '' },
+      github: { owner: '', repo: 'PWP_jobhunt', token: '' },
+      runState: 'stopped'
+    };
+
+    // Load PDF.js worker
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
 
-    function closeErrorPopup() {
-      document.getElementById('error_popup').style.display = 'none';
-    }
-
-    // State for Filter Tags
-    const tags = {
-      includes: [
-        '\\b(software|backend|back-end|server|platform|infrastructure|infra|systems|distributed|cloud)\\b.*\\bengineer\\b',
-        '\\bengineer\\b.*\\b(backend|back-end|platform|infrastructure|infra|systems|distributed)\\b',
-        '\\bsde\\b',
-        '\\bsde\\s*-?\\s*(i{1,3}|[123])\\b',
-        'software development engineer',
-        'software engineer',
-        'site reliability engineer',
-        '\\bsre\\b',
-        'member of technical staff',
-        '\\b(kernel|embedded|firmware|driver|packet|dataplane|data plane)\\b.*\\bengineer\\b'
-      ],
-      excludes: [
-        '\\b(staff|principal|distinguished|fellow|architect)\\b',
-        '\\bsenior\\b',
-        '\\b(director|vp|vice president|head of|chief|cto)\\b',
-        '\\b(manager|management)\\b',
-        '\\b(intern|internship|apprentice|trainee)\\b',
-        '\\b(sales|account executive|marketing|recruit|support|success)\\b',
-        '\\b(frontend|front-end|ios|android|mobile|game|designer)\\b'
-      ],
-      locations: [
-        'bangalore',
-        'bengaluru',
-        'india'
-      ]
-    };
-
-    // State for Companies
-    const companyBoards = [
-      { ats: 'greenhouse', slug: 'stripe', name: 'Stripe' },
-      { ats: 'lever', slug: 'netlify', name: 'Netlify' },
-      { ats: 'ashby', slug: 'ramp', name: 'Ramp' },
-      { ats: 'greenhouse', slug: 'databricks', name: 'Databricks' },
-      { ats: 'greenhouse', slug: 'cloudflare', name: 'Cloudflare' },
-      { ats: 'ashby', slug: 'openai', name: 'OpenAI' }
-    ];
-
-    // Preset Options
-    const presets = {
-      includes: [
-        { label: '+ Backend SDE', val: '\\b(software|backend|server|platform|infrastructure)\\b.*\\bengineer\\b' },
-        { label: '+ SDE', val: '\\bsde\\b' },
-        { label: '+ SDE 1/2/3', val: '\\bsde\\s*-?\\s*(i{1,3}|[123])\\b' },
-        { label: '+ Software Engineer', val: 'software engineer' },
-        { label: '+ Systems/Kernel', val: '\\b(kernel|embedded|firmware|driver|packet|dataplane)\\b.*\\bengineer\\b' },
-        { label: '+ SRE', val: 'site reliability engineer' }
-      ],
-      excludes: [
-        { label: '+ Exclude Senior', val: '\\bsenior\\b' },
-        { label: '+ Exclude Staff/Lead', val: '\\b(staff|principal|lead|architect)\\b' },
-        { label: '+ Exclude Management', val: '\\b(director|vp|head of|manager)\\b' },
-        { label: '+ Exclude Interns', val: '\\b(intern|internship|apprentice|trainee)\\b' },
-        { label: '+ Exclude Sales', val: '\\b(sales|marketing|support)\\b' }
-      ],
-      locations: [
-        { label: '+ bangalore', val: 'bangalore' },
-        { label: '+ bengaluru', val: 'bengaluru' },
-        { label: '+ hyderabad', val: 'hyderabad' },
-        { label: '+ pune', val: 'pune' },
-        { label: '+ india', val: 'india' }
-      ],
-      companies: [
-        { label: '+ Stripe (greenhouse)', ats: 'greenhouse', slug: 'stripe', name: 'Stripe' },
-        { label: '+ Netlify (lever)', ats: 'lever', slug: 'netlify', name: 'Netlify' },
-        { label: '+ Ramp (ashby)', ats: 'ashby', slug: 'ramp', name: 'Ramp' },
-        { label: '+ Figma (greenhouse)', ats: 'greenhouse', slug: 'figma', name: 'Figma' },
-        { label: '+ Linear (ashby)', ats: 'ashby', slug: 'linear', name: 'Linear' },
-        { label: '+ Coinbase (greenhouse)', ats: 'greenhouse', slug: 'coinbase', name: 'Coinbase' }
-      ]
-    };
-
-    // Default Profile JSON Example
-    const defaultProfile = {
-      name: "Your Name",
-      current_title: "Software Engineer",
-      years_experience: 3,
-      core_skills: ["Python", "Backend Systems", "REST APIs", "SQL", "Docker"],
-      domains: ["distributed systems", "cloud", "backend"],
-      notable_projects: ["Built real-time job processing pipeline"],
-      target_titles: ["Software Engineer", "Backend Engineer", "SDE II"],
-      seniority: "mid"
-    };
-
-    // Model Datalist Examples
-    const modelExamples = {
-      Anthropic: {
-        screen: ['claude-3-5-haiku-20241022', 'claude-3-haiku-20240307'],
-        draft: ['claude-3-5-sonnet-20241022']
-      },
-      'Google Gemini': {
-        screen: ['gemini-3.5-flash-lite', 'gemini-1.5-flash'],
-        draft: ['gemini-3.6-flash', 'gemini-1.5-pro']
-      },
-      Groq: {
-        screen: ['llama-3.1-8b-instant'],
-        draft: ['llama-3.3-70b-versatile']
-      },
-      'OpenAI-compatible': {
-        screen: ['gpt-4o-mini', 'gpt-3.5-turbo'],
-        draft: ['gpt-4o']
-      },
-      Ollama: {
-        screen: ['qwen2.5:7b', 'llama3:8b'],
-        draft: ['qwen2.5:14b']
-      },
-      Custom: {
-        screen: ['custom-screening-model'],
-        draft: ['custom-drafting-model']
+    // Load cached non-sensitive values from localStorage
+    function loadLocalStorage() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('pwp_jobhunt_cfg') || '{}');
+        if (saved.llmProvider) document.getElementById('llmProvider').value = saved.llmProvider;
+        if (saved.llmBaseUrl) document.getElementById('llmBaseUrl').value = saved.llmBaseUrl;
+        if (saved.schedHour) document.getElementById('schedHour').value = saved.schedHour;
+        if (saved.schedMinute) document.getElementById('schedMinute').value = saved.schedMinute;
+        if (saved.schedAmpm) document.getElementById('schedAmpm').value = saved.schedAmpm;
+        if (saved.scoreThreshold) document.getElementById('scoreThreshold').value = saved.scoreThreshold;
+        if (saved.maxPerDigest) document.getElementById('maxPerDigest').value = saved.maxPerDigest;
+        if (saved.maxAgeDays) document.getElementById('maxAgeDays').value = saved.maxAgeDays;
+        if (saved.noAgeLimit !== undefined) {
+          document.getElementById('noAgeLimit').checked = saved.noAgeLimit;
+          document.getElementById('maxAgeDays').disabled = saved.noAgeLimit;
+        }
+        if (saved.gmailAddress) document.getElementById('gmailAddress').value = saved.gmailAddress;
+        if (saved.ghOwner) document.getElementById('ghOwner').value = saved.ghOwner;
+        if (saved.ghRepo) document.getElementById('ghRepo').value = saved.ghRepo;
+        if (Array.isArray(saved.interestedTags)) {
+          state.tags.interested = saved.interestedTags;
+        }
+        if (Array.isArray(saved.notInterestedTags)) {
+          state.tags.notInterested = saved.notInterestedTags;
+        }
+        if (Array.isArray(saved.days)) {
+          [0, 1, 2, 3, 4, 5, 6].forEach(d => {
+            const el = document.getElementById(`day-${d}`);
+            if (el) el.checked = saved.days.includes(d);
+          });
+        }
+        updateTagDOM();
+      } catch (e) {
+        console.warn('Failed to load localStorage', e);
       }
-    };
-
-    let lastAutoKeyName = 'GEMINI_API_KEY';
-
-    // Toggle Advanced Split Providers
-    function toggleAdvancedProviders() {
-      const el = document.getElementById('advanced_providers_wrapper');
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Parse URL / Slug to ATS, Slug & Name
-    function parseCompanyUrl(rawUrl, manualAts) {
-      let str = rawUrl.trim().toLowerCase();
-      str = str.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
-      
-      let ats = manualAts && manualAts !== 'auto' ? manualAts : 'greenhouse';
-      let slug = '';
+    function saveLocalStorage() {
+      try {
+        const selectedDays = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => parseInt(cb.value));
+        const data = {
+          llmProvider: document.getElementById('llmProvider').value,
+          llmBaseUrl: document.getElementById('llmBaseUrl').value,
+          schedHour: document.getElementById('schedHour').value,
+          schedMinute: document.getElementById('schedMinute').value,
+          schedAmpm: document.getElementById('schedAmpm').value,
+          days: selectedDays,
+          scoreThreshold: document.getElementById('scoreThreshold').value,
+          maxPerDigest: document.getElementById('maxPerDigest').value,
+          maxAgeDays: document.getElementById('maxAgeDays').value,
+          noAgeLimit: document.getElementById('noAgeLimit').checked,
+          gmailAddress: document.getElementById('gmailAddress').value,
+          ghOwner: document.getElementById('ghOwner').value,
+          ghRepo: document.getElementById('ghRepo').value,
+          interestedTags: state.tags.interested,
+          notInterestedTags: state.tags.notInterested
+        };
+        localStorage.setItem('pwp_jobhunt_cfg', JSON.stringify(data));
+      } catch (e) {
+        console.warn('Failed to save localStorage', e);
+      }
+    }
 
-      const ghMatch = str.match(/(?:boards\.greenhouse\.io|greenhouse\.io)\/([a-z0-9_-]+)/i);
-      const levMatch = str.match(/(?:jobs\.lever\.co|lever\.co)\/([a-z0-9_-]+)/i);
-      const ashMatch = str.match(/(?:jobs\.ashbyhq\.com|ashbyhq\.com)\/([a-z0-9_-]+)/i);
+    // UI event wiring
+    document.getElementById('llmProvider').addEventListener('change', (e) => {
+      const isOther = e.target.value === 'openai-compatible';
+      document.getElementById('baseUrlGroup').style.display = isOther ? 'block' : 'none';
+      saveLocalStorage();
+    });
 
-      if (ghMatch) {
-        ats = 'greenhouse';
-        slug = ghMatch[1];
-      } else if (levMatch) {
-        ats = 'lever';
-        slug = levMatch[1];
-      } else if (ashMatch) {
-        ats = 'ashby';
-        slug = ashMatch[1];
+    document.getElementById('noAgeLimit').addEventListener('change', (e) => {
+      document.getElementById('maxAgeDays').disabled = e.target.checked;
+      saveLocalStorage();
+    });
+
+    // Tag Editor logic
+    function renderTags(containerId, tags, isNotInterested) {
+      const container = document.getElementById(containerId);
+      const input = container.querySelector('.tag-input');
+      container.querySelectorAll('.tag').forEach(t => t.remove());
+
+      tags.forEach((tagText, idx) => {
+        const tagEl = document.createElement('div');
+        tagEl.className = 'tag' + (isNotInterested ? ' not-interested' : '');
+        tagEl.innerHTML = `${escapeHtml(tagText)} <span class="tag-remove" data-idx="${idx}">&times;</span>`;
+        tagEl.querySelector('.tag-remove').addEventListener('click', () => {
+          tags.splice(idx, 1);
+          renderTags(containerId, tags, isNotInterested);
+          saveLocalStorage();
+        });
+        container.insertBefore(tagEl, input);
+      });
+    }
+
+    function updateTagDOM() {
+      renderTags('interestedContainer', state.tags.interested, false);
+      renderTags('notInterestedContainer', state.tags.notInterested, true);
+    }
+
+    function setupTagInputs() {
+      const intInput = document.getElementById('interestedTagsInput');
+      intInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          const val = intInput.value.trim().replace(/,/g, '');
+          if (val && !state.tags.interested.some(t => t.toLowerCase() === val.toLowerCase())) {
+            state.tags.interested.push(val);
+            intInput.value = '';
+            updateTagDOM();
+            saveLocalStorage();
+          }
+        }
+      });
+
+      const notIntInput = document.getElementById('notInterestedTagsInput');
+      notIntInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          const val = notIntInput.value.trim().replace(/,/g, '');
+          if (val && !state.tags.notInterested.some(t => t.toLowerCase() === val.toLowerCase())) {
+            state.tags.notInterested.push(val);
+            notIntInput.value = '';
+            updateTagDOM();
+            saveLocalStorage();
+          }
+        }
+      });
+    }
+
+    // Resume drag & drop & text extraction
+    function setupResumeDropzone() {
+      const dz = document.getElementById('dropzone');
+      const fileInput = document.getElementById('resumeFileInput');
+
+      dz.addEventListener('click', () => fileInput.click());
+      dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
+      dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+      dz.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) handleFile(e.target.files[0]);
+      });
+    }
+
+    async function handleFile(file) {
+      document.getElementById('fileName').textContent = file.name;
+      state.resume.fileName = file.name;
+      updateStatus('Reading resume file...');
+
+      try {
+        if (file.name.toLowerCase().endsWith('.pdf')) {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          let text = '';
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            text += content.items.map(item => item.str).join(' ') + '\n';
+          }
+          state.resume.rawText = text;
+        } else {
+          state.resume.rawText = await file.text();
+        }
+
+        // Process profile with LLM if key is available
+        const apiKey = document.getElementById('llmApiKey').value.trim();
+        if (apiKey) {
+          await parseResumeProfile(apiKey);
+        } else {
+          updateStatus('Resume text loaded. Enter LLM API Key to parse target roles.');
+        }
+      } catch (err) {
+        updateStatus('Failed to read resume file: ' + err.message);
+      }
+    }
+
+    // PROFILE_PROMPT resume parsing
+    const PROFILE_PROMPT = `Extract a structured job-search profile from this resume.
+
+Return ONLY a JSON object, no prose, no markdown fences:
+{
+  "name": str,
+  "current_title": str,
+  "years_experience": number,
+  "core_skills": [str],
+  "domains": [str],
+  "notable_projects": [str],
+  "education": str,
+  "target_titles": [str],
+  "seniority": str
+}`;
+
+    async function parseResumeProfile(apiKey) {
+      updateStatus('Extracting profile & target titles via LLM...');
+      const provider = document.getElementById('llmProvider').value;
+      const baseUrl = document.getElementById('llmBaseUrl').value.trim();
+
+      try {
+        let replyText = '';
+        if (provider === 'gemini') {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: PROFILE_PROMPT + '\n\nResume:\n' + state.resume.rawText }] }],
+              generationConfig: { responseMimeType: 'application/json' }
+            })
+          });
+          if (!res.ok) throw new Error(`Gemini HTTP ${res.status}`);
+          const json = await res.json();
+          replyText = json.candidates[0].content.parts[0].text;
+        } else if (provider === 'anthropic') {
+          const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'content-type': 'application/json',
+              'dangerously-allow-browser-builds': 'true'
+            },
+            body: JSON.stringify({
+              model: 'claude-3-5-haiku-20241022',
+              max_tokens: 1024,
+              messages: [{ role: 'user', content: PROFILE_PROMPT + '\n\nResume:\n' + state.resume.rawText }]
+            })
+          });
+          if (!res.ok) throw new Error(`Anthropic HTTP ${res.status}`);
+          const json = await res.json();
+          replyText = json.content[0].text;
+        } else {
+          // OpenAI-compatible / Groq / OpenRouter
+          const base = (baseUrl || 'https://api.groq.com/openai/v1').replace(/\/$/, '');
+          const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          };
+          if (base.includes('openrouter.ai')) {
+            headers['HTTP-Referer'] = 'https://github.com/perryvegehan/PWP_jobhunt';
+            headers['X-Title'] = 'PWP_jobhunt';
+          }
+          const model = base.includes('groq.com') ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
+          const res = await fetch(`${base}/chat/completions`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              model,
+              messages: [{ role: 'user', content: PROFILE_PROMPT + '\n\nResume:\n' + state.resume.rawText }],
+              response_format: { type: 'json_object' }
+            })
+          });
+          if (!res.ok) throw new Error(`LLM HTTP ${res.status}`);
+          const json = await res.json();
+          replyText = json.choices[0].message.content;
+        }
+
+        // Clean markdown code fence wrappers if present
+        replyText = replyText.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '').trim();
+        state.profile = JSON.parse(replyText);
+
+        if (Array.isArray(state.profile.target_titles)) {
+          state.tags.interested = [...state.profile.target_titles];
+          updateTagDOM();
+          saveLocalStorage();
+        }
+
+        // Auto-discover candidate companies based on target_titles & domains
+        await autoDiscoverCompanies(apiKey, provider, baseUrl);
+        updateStatus('Resume processed. Target titles & companies ready.');
+      } catch (err) {
+        updateStatus('LLM Profile parsing warning: ' + err.message);
+      }
+    }
+
+    // Step A & B Company Discovery
+    async function autoDiscoverCompanies(apiKey, provider, baseUrl) {
+      if (!state.profile) return;
+      updateStatus('Discovering candidate company job boards...');
+
+      const prompt = `Given these target titles: ${JSON.stringify(state.profile.target_titles || [])} and domains: ${JSON.stringify(state.profile.domains || [])}, suggest 25 tech companies likely hiring for these roles.
+
+Return ONLY a JSON array of plain company names: ["Stripe", "Databricks", "Notion", ...]`;
+
+      try {
+        let text = '[]';
+        if (provider === 'gemini') {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: { responseMimeType: 'application/json' }
+            })
+          });
+          if (res.ok) text = (await res.json()).candidates[0].content.parts[0].text;
+        } else {
+          const base = (baseUrl || 'https://api.groq.com/openai/v1').replace(/\/$/, '');
+          const model = base.includes('groq.com') ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
+          const res = await fetch(`${base}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }] })
+          });
+          if (res.ok) text = (await res.json()).choices[0].message.content;
+        }
+
+        text = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '').trim();
+        const candidateNames = JSON.parse(text);
+
+        // Step B: Verify candidate slugs against Greenhouse, Lever, and Ashby APIs
+        const verified = [];
+        for (const name of candidateNames) {
+          const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (!slug) continue;
+
+          // Greenhouse
+          try {
+            const gh = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`);
+            if (gh.ok) {
+              const data = await gh.json();
+              if (data.jobs && data.jobs.length > 0) {
+                verified.push({ ats: 'greenhouse', slug, name });
+                await new Promise(r => setTimeout(r, 150));
+                continue;
+              }
+            }
+          } catch (e) {}
+
+          // Lever
+          try {
+            const lev = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`);
+            if (lev.ok) {
+              const data = await lev.json();
+              if (Array.isArray(data) && data.length > 0) {
+                verified.push({ ats: 'lever', slug, name });
+                await new Promise(r => setTimeout(r, 150));
+                continue;
+              }
+            }
+          } catch (e) {}
+
+          // Ashby
+          try {
+            const ash = await fetch(`https://api.ashbyhq.com/posting-api/job-board/${slug}?includeCompensation=true`);
+            if (ash.ok) {
+              const data = await ash.json();
+              if (data.jobs && data.jobs.length > 0) {
+                verified.push({ ats: 'ashby', slug, name });
+                await new Promise(r => setTimeout(r, 150));
+                continue;
+              }
+            }
+          } catch (e) {}
+
+          await new Promise(r => setTimeout(r, 150));
+        }
+
+        state.companies = verified;
+      } catch (err) {
+        console.warn('Company discovery warning:', err);
+      }
+    }
+
+    // Schedule conversion IST -> UTC cron
+    function istToUtcCron(hour12, minute, ampm, selectedDaysMonSun) {
+      let h = parseInt(hour12, 10);
+      if (ampm === 'PM' && h < 12) h += 12;
+      if (ampm === 'AM' && h === 12) h = 0;
+
+      // IST is UTC+5:30 -> subtract 5h30m
+      let totalMin = h * 60 + parseInt(minute, 10) - (5 * 60 + 30);
+      let dayShift = 0;
+      if (totalMin < 0) {
+        totalMin += 24 * 60;
+        dayShift = -1;
+      }
+
+      const utcHour = Math.floor(totalMin / 60);
+      const utcMin = totalMin % 60;
+      const shiftedDays = selectedDaysMonSun.map(d => (d + 7 + dayShift) % 7);
+      if (shiftedDays.length === 0) throw new Error('Select at least one active day.');
+
+      return `${utcMin} ${utcHour} * * ${shiftedDays.sort((a,b)=>a-b).join(',')}`;
+    }
+
+    function tagToPattern(tag) {
+      const escaped = tag.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return `\\b${escaped}\\b`;
+    }
+
+    // Encrypt secret using libsodium sealed box
+    async function encryptSecret(publicKeyB64, secretValue) {
+      await sodium.ready;
+      const keyBytes = sodium.from_base64(publicKeyB64, sodium.base64_variants.ORIGINAL);
+      const msgBytes = sodium.from_string(secretValue);
+      const encBytes = sodium.crypto_box_seal(msgBytes, keyBytes);
+      return sodium.to_base64(encBytes, sodium.base64_variants.ORIGINAL);
+    }
+
+    // GitHub API Client
+    async function githubFetch(owner, repo, token, endpoint, method = 'GET', body = null) {
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}${endpoint}`, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          ...(body ? { 'Content-Type': 'application/json' } : {})
+        },
+        body: body ? JSON.stringify(body) : null
+      });
+
+      if (res.status === 401) throw new Error('GitHub rejected the token (401) — check it hasn\'t expired.');
+      if (res.status === 403) throw new Error('GitHub token lacks required scope or rate limit exceeded (403).');
+      if (res.status === 404) throw new Error('Repository or resource not found (404) — check owner and repo name.');
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`GitHub API HTTP ${res.status}: ${text.slice(0, 100)}`);
+      }
+      return res.status !== 24 && res.headers.get('content-type')?.includes('json') ? await res.json() : null;
+    }
+
+    async function pushFileContents(owner, repo, token, path, contentString, commitMessage) {
+      let sha = undefined;
+      try {
+        const existing = await githubFetch(owner, repo, token, `/contents/${path}`);
+        if (existing && existing.sha) sha = existing.sha;
+      } catch (e) {}
+
+      const b64 = btoa(unescape(encodeURIComponent(contentString)));
+      await githubFetch(owner, repo, token, `/contents/${path}`, 'PUT', {
+        message: commitMessage,
+        content: b64,
+        ...(sha ? { sha } : {})
+      });
+    }
+
+    async function setSecret(owner, repo, token, secretName, secretValue, pubKeyData) {
+      const encB64 = await encryptSecret(pubKeyData.key, secretValue);
+      await githubFetch(owner, repo, token, `/actions/secrets/${secretName}`, 'PUT', {
+        encrypted_value: encB64,
+        key_id: pubKeyData.key_id
+      });
+    }
+
+    async function setVariable(owner, repo, token, varName, varValue) {
+      try {
+        await githubFetch(owner, repo, token, `/actions/variables/${varName}`, 'PATCH', { name: varName, value: varValue });
+      } catch (e) {
+        await githubFetch(owner, repo, token, `/actions/variables`, 'POST', { name: varName, value: varValue });
+      }
+    }
+
+    // Start / Stop Controller
+    document.getElementById('toggleBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('toggleBtn');
+      if (state.runState === 'running') {
+        await stopPipeline();
       } else {
-        const segments = str.split('/')[0].split('?')[0];
-        slug = segments.replace(/[^a-z0-9_-]/g, '');
+        await startPipeline();
       }
+    });
 
-      slug = slug.trim().replace(/[^a-z0-9_-]/g, '');
-      const name = slug ? (slug.charAt(0).toUpperCase() + slug.slice(1)) : '';
-      return { ats, slug, name };
-    }
+    async function startPipeline() {
+      // Validate inputs
+      const apiKey = document.getElementById('llmApiKey').value.trim();
+      const appPass = document.getElementById('gmailAppPassword').value.trim();
+      const token = document.getElementById('ghToken').value.trim();
+      const owner = document.getElementById('ghOwner').value.trim();
+      const repo = document.getElementById('ghRepo').value.trim();
+      const gmail = document.getElementById('gmailAddress').value.trim();
 
-    function parseAndAddCompanyBoard() {
-      const rawUrl = document.getElementById('board_url_input').value;
-      const manualAts = document.getElementById('board_ats_select').value;
-      const manualSlug = document.getElementById('board_slug_input').value.trim();
-      const manualName = document.getElementById('board_name_input').value.trim();
-
-      let ats = 'greenhouse', slug = '', name = '';
-
-      if (manualSlug) {
-        slug = manualSlug;
-        ats = manualAts !== 'auto' ? manualAts : 'greenhouse';
-        name = manualName || (slug.charAt(0).toUpperCase() + slug.slice(1));
-      } else if (rawUrl) {
-        const parsed = parseCompanyUrl(rawUrl, manualAts);
-        ats = parsed.ats;
-        slug = parsed.slug;
-        name = manualName || parsed.name;
-      }
-
-      if (!slug) {
-        showErrorPopup('Board Parse Error', 'Please enter a valid company board URL (e.g. boards.greenhouse.io/stripe) or slug.');
+      if (!apiKey || !appPass || !token || !owner || !repo || !gmail) {
+        updateStatus('Please fill in API key, Gmail App Password, Gmail address, and GitHub token.');
         return;
       }
 
-      addCompanyBoard(ats, slug, name);
-      document.getElementById('board_url_input').value = '';
-      document.getElementById('board_slug_input').value = '';
-      document.getElementById('board_name_input').value = '';
-    }
-
-    function addCompanyBoard(ats, slug, name) {
-      if (companyBoards.some(c => c.slug === slug)) {
-        return; // Skip duplicate
+      if (state.tags.interested.length === 0) {
+        document.getElementById('interestedError').style.display = 'block';
+        updateStatus('Specify at least one target title interest.');
+        return;
+      } else {
+        document.getElementById('interestedError').style.display = 'none';
       }
-      companyBoards.push({ ats, slug, name: name || (slug.charAt(0).toUpperCase() + slug.slice(1)) });
-      renderCompanies();
-      update();
-    }
 
-    function removeCompanyBoard(index) {
-      companyBoards.splice(index, 1);
-      renderCompanies();
-      update();
-    }
+      const selectedDays = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => parseInt(cb.value));
+      if (selectedDays.length === 0) {
+        document.getElementById('daysError').style.display = 'block';
+        updateStatus('Select at least one active day.');
+        return;
+      } else {
+        document.getElementById('daysError').style.display = 'none';
+      }
 
-    function renderCompanies() {
-      const box = document.getElementById('companies_chip_box');
-      box.innerHTML = '';
-      companyBoards.forEach((c, index) => {
-        const chip = document.createElement('span');
-        chip.className = 'tag-chip';
-        chip.innerHTML = `<strong>${escapeHtml(c.name)}</strong> <span style="font-size: 11px; opacity: 0.75;">(${c.ats}:${c.slug})</span><button class="tag-chip-remove" onclick="removeCompanyBoard(${index})">&times;</button>`;
-        box.appendChild(chip);
-      });
-    }
+      const btn = document.getElementById('toggleBtn');
+      btn.disabled = true;
+      updateStatus('Starting automation pipeline...');
 
-    function renderCompanyPresets() {
-      const bar = document.getElementById('companies_presets');
-      bar.innerHTML = '<span class="preset-label">Presets:</span>';
-      presets.companies.forEach(p => {
-        const btn = document.createElement('button');
-        btn.className = 'preset-chip-btn';
-        btn.textContent = p.label;
-        btn.onclick = (e) => {
-          e.preventDefault();
-          addCompanyBoard(p.ats, p.slug, p.name);
-        };
-        bar.appendChild(btn);
-      });
-    }
+      try {
+        saveLocalStorage();
+        const provider = document.getElementById('llmProvider').value;
+        const baseUrl = document.getElementById('llmBaseUrl').value.trim();
+        const scoreThresh = parseFloat(document.getElementById('scoreThreshold').value);
+        const maxPerDig = parseInt(document.getElementById('maxPerDigest').value, 10);
+        const noAge = document.getElementById('noAgeLimit').checked;
+        const maxAge = noAge ? null : parseInt(document.getElementById('maxAgeDays').value, 10);
 
-    // Render Filter Tags in Box
-    function renderTags(category, boxId) {
-      const box = document.getElementById(boxId);
-      const input = box.querySelector('.tag-input-element');
-      box.querySelectorAll('.tag-chip').forEach(c => c.remove());
+        // 1. Build config.yaml string
+        const incRegexes = state.tags.interested.map(tagToPattern);
+        const excRegexes = state.tags.notInterested.map(tagToPattern);
 
-      tags[category].forEach((item, index) => {
-        const chip = document.createElement('span');
-        chip.className = 'tag-chip';
-        chip.innerHTML = `${escapeHtml(item)}<button class="tag-chip-remove" onclick="removeTag('${category}', ${index})">&times;</button>`;
-        box.insertBefore(chip, input);
-      });
-    }
+        const configYaml = `filters:
+  include_titles:
+${incRegexes.map(r => `    - '${r.replace(/'/g, "''")}'`).join('\n')}
+  exclude_titles:
+${excRegexes.map(r => `    - '${r.replace(/'/g, "''")}'`).join('\n')}
+  locations: []
+  allow_remote: true
+  max_age_days: ${maxAge === null ? 'null' : maxAge}
+score_threshold: ${scoreThresh}
+max_per_digest: ${maxPerDig}
+companies_file: companies.yaml
+profile_file: profile.json
+seen_file: seen.json
+digest_file: out/digest.html
+tracker_csv: out/tracker.csv
+`;
 
-    function removeTag(category, index) {
-      tags[category].splice(index, 1);
-      renderTags('includes', 'includes_chip_box');
-      renderTags('excludes', 'excludes_chip_box');
-      renderTags('locations', 'locations_chip_box');
-      update();
-    }
+        // 2. Build companies.yaml
+        const compEntries = state.companies.length > 0 ? state.companies : [];
+        const companiesYaml = `companies:
+${compEntries.map(c => `  - {ats: ${c.ats}, slug: ${c.slug}, name: "${c.name}"}`).join('\n')}
+`;
 
-    function addTag(category, val) {
-      const trimmed = val.trim();
-      if (!trimmed) return;
+        // 3. IST -> UTC Cron
+        const hour = document.getElementById('schedHour').value;
+        const minute = document.getElementById('schedMinute').value;
+        const ampm = document.getElementById('schedAmpm').value;
+        const cronStr = istToUtcCron(hour, minute, ampm, selectedDays);
 
-      if (category === 'includes' || category === 'excludes') {
-        try {
-          new RegExp(trimmed);
-        } catch (err) {
-          showErrorPopup('Regex Syntax Error', `Invalid regular expression pattern: "${trimmed}". Exception: ${err.message}`);
-          return;
+        // 4. Fetch daily.yml workflow and update cron line
+        const wfFile = await githubFetch(owner, repo, token, '/contents/.github/workflows/daily.yml');
+        const wfContent = decodeURIComponent(escape(atob(wfFile.content)));
+        const updatedWfContent = wfContent.replace(/cron:\s*"[^"]+"/, `cron: "${cronStr}"`);
+
+        // 5. Push files via Contents API
+        updateStatus('Pushing configuration files to repository...');
+        await pushFileContents(owner, repo, token, 'config.yaml', configYaml, 'Update config.yaml from console');
+        await pushFileContents(owner, repo, token, 'companies.yaml', companiesYaml, 'Update companies.yaml from console');
+        await pushFileContents(owner, repo, token, '.github/workflows/daily.yml', updatedWfContent, 'Update daily schedule cron from console');
+
+        // 6. Push secrets
+        updateStatus('Encrypting & pushing repository secrets...');
+        const pubKeyData = await githubFetch(owner, repo, token, '/actions/secrets/public-key');
+
+        const secretKeyName = provider === 'gemini' ? 'GEMINI_API_KEY' : (provider === 'anthropic' ? 'ANTHROPIC_API_KEY' : 'LLM_API_KEY');
+        await setSecret(owner, repo, token, secretKeyName, apiKey, pubKeyData);
+        await setSecret(owner, repo, token, 'SMTP_PASS', appPass, pubKeyData);
+        await setSecret(owner, repo, token, 'SMTP_USER', gmail, pubKeyData);
+        await setSecret(owner, repo, token, 'MAIL_TO', gmail, pubKeyData);
+        await setSecret(owner, repo, token, 'PROFILE_JSON', JSON.stringify(state.profile || { target_titles: state.tags.interested }), pubKeyData);
+
+        // 7. Push variables
+        updateStatus('Updating workflow variables...');
+        await setVariable(owner, repo, token, 'LLM_PROVIDER', provider);
+        if (baseUrl) await setVariable(owner, repo, token, 'LLM_BASE_URL', baseUrl);
+
+        // 8. Enable workflow
+        updateStatus('Enabling GitHub Actions daily workflow...');
+        const wfs = await githubFetch(owner, repo, token, '/actions/workflows');
+        const dailyWf = wfs.workflows.find(w => w.path.includes('daily.yml'));
+        if (dailyWf) {
+          await githubFetch(owner, repo, token, `/actions/workflows/${dailyWf.id}/enable`, 'PUT');
         }
-      }
 
-      if (!tags[category].includes(trimmed)) {
-        tags[category].push(trimmed);
-        renderTags('includes', 'includes_chip_box');
-        renderTags('excludes', 'excludes_chip_box');
-        renderTags('locations', 'locations_chip_box');
-        update();
+        setRunState('running', `Running — next digest around ${hour}:${minute.padStart(2, '0')} ${ampm} IST`);
+      } catch (err) {
+        setRunState('stopped', err.message);
+      } finally {
+        btn.disabled = false;
       }
     }
 
-    function setupTagInput(inputId, category) {
-      const input = document.getElementById(inputId);
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ',') {
-          e.preventDefault();
-          addTag(category, input.value);
-          input.value = '';
+    async function stopPipeline() {
+      const token = document.getElementById('ghToken').value.trim();
+      const owner = document.getElementById('ghOwner').value.trim();
+      const repo = document.getElementById('ghRepo').value.trim();
+
+      if (!token || !owner || !repo) {
+        updateStatus('Enter GitHub Owner, Repo, and Token to stop workflow.');
+        return;
+      }
+
+      const btn = document.getElementById('toggleBtn');
+      btn.disabled = true;
+      updateStatus('Disabling daily workflow...');
+
+      try {
+        const wfs = await githubFetch(owner, repo, token, '/actions/workflows');
+        const dailyWf = wfs.workflows.find(w => w.path.includes('daily.yml'));
+        if (dailyWf) {
+          await githubFetch(owner, repo, token, `/actions/workflows/${dailyWf.id}/disable`, 'PUT');
         }
-      });
+        setRunState('stopped', 'Stopped');
+      } catch (err) {
+        updateStatus('Failed to disable workflow: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
     }
 
-    // Render Filter Presets
-    function renderPresets(category, barId) {
-      const bar = document.getElementById(barId);
-      bar.innerHTML = '<span class="preset-label">Presets:</span>';
-      presets[category].forEach(p => {
-        const btn = document.createElement('button');
-        btn.className = 'preset-chip-btn';
-        btn.textContent = p.label;
-        btn.onclick = (e) => {
-          e.preventDefault();
-          addTag(category, p.val);
-        };
-        bar.appendChild(btn);
-      });
+    async function checkWorkflowStateOnLoad() {
+      const token = document.getElementById('ghToken').value.trim();
+      const owner = document.getElementById('ghOwner').value.trim();
+      const repo = document.getElementById('ghRepo').value.trim();
+      if (!token || !owner || !repo) return;
+
+      try {
+        const wfs = await githubFetch(owner, repo, token, '/actions/workflows');
+        const dailyWf = wfs.workflows.find(w => w.path.includes('daily.yml'));
+        if (dailyWf) {
+          if (dailyWf.state === 'active') {
+            const hour = document.getElementById('schedHour').value;
+            const minute = document.getElementById('schedMinute').value;
+            const ampm = document.getElementById('schedAmpm').value;
+            setRunState('running', `Running — next digest around ${hour}:${minute.padStart(2, '0')} ${ampm} IST`);
+          } else {
+            setRunState('stopped', 'Stopped');
+          }
+        }
+      } catch (e) {}
+    }
+
+    function setRunState(runState, statusMsg) {
+      state.runState = runState;
+      const btn = document.getElementById('toggleBtn');
+      const badge = document.getElementById('statusBadge');
+      const statusLine = document.getElementById('statusLine');
+
+      if (runState === 'running') {
+        btn.textContent = 'Stop';
+        btn.classList.add('stop');
+        badge.textContent = 'Running';
+        badge.className = 'status-badge running';
+      } else {
+        btn.textContent = 'Start';
+        btn.classList.remove('stop');
+        badge.textContent = 'Stopped';
+        badge.className = 'status-badge stopped';
+      }
+      statusLine.textContent = statusMsg;
+    }
+
+    function updateStatus(msg) {
+      document.getElementById('statusLine').textContent = msg;
     }
 
     function escapeHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function handleProviderSelectChange() {
-      const provider = document.getElementById('llm_provider').value;
-      const keyNameInput = document.getElementById('api_key_name');
-      
-      let defaultKey = 'GEMINI_API_KEY';
-      if (provider === 'Anthropic') defaultKey = 'ANTHROPIC_API_KEY';
-      else if (provider === 'Google Gemini') defaultKey = 'GEMINI_API_KEY';
-      else if (provider === 'Groq') defaultKey = 'GROQ_API_KEY';
-      else if (provider === 'OpenAI-compatible') defaultKey = 'GROQ_API_KEY';
-      else if (provider === 'Ollama') defaultKey = 'OLLAMA_API_KEY';
-      else if (provider === 'Custom') defaultKey = 'CUSTOM_API_KEY';
-
-      if (keyNameInput.value === lastAutoKeyName || !keyNameInput.value.trim()) {
-        keyNameInput.value = defaultKey;
-        lastAutoKeyName = defaultKey;
-      }
-      update();
-    }
-
-    // Handle Resume File Drag & Drop / Selection
-    function handleResumeFileUpload(file) {
-      if (!file) return;
-      document.getElementById('resume_filename_status').textContent = `Loaded: ${file.name} (${Math.round(file.size / 1024)} KB)`;
-      
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const content = e.target.result;
-        if (file.name.endsWith('.json')) {
-          try {
-            const parsed = JSON.parse(content);
-            document.getElementById('profile_json_editor').value = JSON.stringify(parsed, null, 2);
-          } catch (err) {
-            document.getElementById('profile_json_editor').value = content;
-          }
-        } else {
-          const extractedProfile = {
-            name: file.name.replace(/\.[^/.]+$/, ""),
-            resume_file: file.name,
-            raw_text_preview: content.slice(0, 500) + '...',
-            target_titles: ["Software Engineer", "Backend Engineer"],
-            core_skills: ["Python", "Systems"]
-          };
-          document.getElementById('profile_json_editor').value = JSON.stringify(extractedProfile, null, 2);
-        }
-        update();
-      };
-
-      if (file.name.endsWith('.pdf')) {
-        const pdfProfile = {
-          name: file.name.replace(/\.[^/.]+$/, ""),
-          format: "PDF Document",
-          size_bytes: file.size,
-          target_titles: ["Software Engineer", "Backend Engineer"],
-          core_skills: ["Software Engineering", "Systems"]
-        };
-        document.getElementById('profile_json_editor').value = JSON.stringify(pdfProfile, null, 2);
-        update();
-      } else {
-        reader.readAsText(file);
-      }
-    }
-
-    // Update Form & Generate Code
-    function update() {
-      let activeError = null;
-
-      // 1. EMAIL & SMTP
-      const smtpUser = document.getElementById('smtp_user').value.trim();
-      const chkCustomMailto = document.getElementById('chk_custom_mailto').checked;
-      const mailtoWrapper = document.getElementById('mailto_field_wrapper');
-      mailtoWrapper.style.display = chkCustomMailto ? 'block' : 'none';
-      const mailTo = chkCustomMailto ? document.getElementById('mail_to').value.trim() : smtpUser;
-
-      const rawPass = document.getElementById('smtp_pass').value;
-      const cleanPass = rawPass.replace(/\s+/g, '');
-      const passWarn = document.getElementById('smtp_pass_warn');
-      
-      if (rawPass.trim() !== '' && cleanPass.length !== 16) {
-        passWarn.style.display = 'block';
-        passWarn.textContent = `App passwords are 16 characters — this one is ${cleanPass.length}.`;
-        activeError = { title: 'App Password Length Limit', msg: `Gmail App Passwords must be 16 characters. Current length: ${cleanPass.length}.` };
-      } else {
-        passWarn.style.display = 'none';
-      }
-
-      // 2. LLM PROVIDER
-      const apiKeyVal = document.getElementById('api_key_val').value;
-      const screenModelVal = document.getElementById('screen_model').value || 'gemini-3.5-flash-lite';
-      const draftModelVal = document.getElementById('draft_model').value || 'gemini-3.6-flash';
-
-      document.getElementById('secret_key_name_checklist').textContent = 'GEMINI_API_KEY';
-
-      // 3. FILTERS & BOUNDARY VALIDATION
-      const scoreVal = parseFloat(document.getElementById('score_threshold').value);
-      if (isNaN(scoreVal) || scoreVal < 0 || scoreVal > 10) {
-        if (!activeError) activeError = { title: 'Boundary Limit Error', msg: 'Score threshold must be between 0.0 and 10.0.' };
-      }
-
-      const maxDigestVal = parseInt(document.getElementById('max_per_digest').value, 10);
-      if (isNaN(maxDigestVal) || maxDigestVal < 1) {
-        if (!activeError) activeError = { title: 'Boundary Limit Error', msg: 'Max per digest must be at least 1.' };
-      }
-
-      const chkNoLimit = document.getElementById('chk_no_limit').checked;
-      const maxAgeInput = document.getElementById('max_age_days');
-      maxAgeInput.disabled = chkNoLimit;
-
-      if (!chkNoLimit) {
-        const maxAgeVal = parseInt(maxAgeInput.value, 10);
-        if (isNaN(maxAgeVal) || maxAgeVal < 1) {
-          if (!activeError) activeError = { title: 'Boundary Limit Error', msg: 'Max age days must be at least 1.' };
-        }
-      }
-
-      // 4. SCHEDULE & CONVERSION LOGIC
-      const hour12 = parseInt(document.getElementById('time_hour').value, 10) || 6;
-      let minVal = parseInt(document.getElementById('time_minute').value, 10);
-      
-      if (isNaN(minVal) || minVal < 0 || minVal > 59) {
-        if (!activeError) activeError = { title: 'Boundary Limit Error', msg: 'Minutes must be between 00 and 59.' };
-        if (isNaN(minVal) || minVal < 0) minVal = 0;
-        if (minVal > 59) minVal = 59;
-      }
-      
-      const ampmVal = document.getElementById('time_ampm').value;
-
-      let hh24 = hour12;
-      if (ampmVal === 'AM') {
-        hh24 = (hour12 === 12) ? 0 : hour12;
-      } else {
-        hh24 = (hour12 === 12) ? 12 : hour12 + 12;
-      }
-
-      const totalMinsIST = hh24 * 60 + minVal;
-      let totalMinsUTC = totalMinsIST - 330; // 5 hours 30 mins = 330 mins
-      let dayShiftedBack = false;
-
-      if (totalMinsUTC < 0) {
-        totalMinsUTC += 1440;
-        dayShiftedBack = true;
-      }
-
-      const utcHour = Math.floor(totalMinsUTC / 60);
-      const utcMin = totalMinsUTC % 60;
-
-      // Selected days IST
-      const selectedDaysIST = [];
-      for (let i = 0; i <= 6; i++) {
-        const chk = document.getElementById(`chk_day_${i}`);
-        if (chk && chk.checked) {
-          selectedDaysIST.push(i);
-        }
-      }
-
-      if (selectedDaysIST.length === 0) {
-        if (!activeError) activeError = { title: 'Active Days Warning', msg: 'Please select at least 1 active day for the daily schedule.' };
-      }
-
-      // Shift days if dayShiftedBack
-      const cronDaysList = selectedDaysIST.map(d => dayShiftedBack ? (d + 6) % 7 : d);
-      cronDaysList.sort((a, b) => a - b);
-      const cronDaysStr = cronDaysList.length > 0 ? cronDaysList.join(',') : '*';
-
-      // Format Human Check String
-      const pad = n => n.toString().padStart(2, '0');
-      const timeStrIST = `${hour12}:${pad(minVal)} ${ampmVal}`;
-      const timeStrUTC = `${pad(utcHour)}:${pad(utcMin)} UTC`;
-      
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const formatDaysText = arr => {
-        if (arr.length === 0) return 'No days selected';
-        if (arr.length === 7) return 'Every day';
-        if (arr.length === 5 && arr.join(',') === '1,2,3,4,5') return 'Mon–Fri';
-        if (arr.length === 5 && arr.join(',') === '0,1,2,3,4') return 'Sun–Thu';
-        return arr.map(d => dayNames[d]).join(', ');
-      };
-
-      const daysTextIST = formatDaysText(selectedDaysIST);
-      const daysTextUTC = formatDaysText(cronDaysList);
-
-      let humanCheck = `${timeStrIST} IST, ${daysTextIST} → ${timeStrUTC}, ${daysTextUTC}`;
-      if (dayShiftedBack) {
-        humanCheck += ' (shifted back one day because IST is ahead of UTC)';
-      }
-
-      // Handle popup alerts
-      if (activeError) {
-        showErrorPopup(activeError.title, activeError.msg);
-      } else {
-        closeErrorPopup();
-      }
-
-      // BUILD .ENV OUTPUT
-      let envText = `LLM_PROVIDER=gemini\n`;
-      envText += `GEMINI_API_KEY=${apiKeyVal || 'paste-your-gemini-api-key-here'}\n`;
-      envText += `SCREEN_MODEL=${screenModelVal}\n`;
-      envText += `DRAFT_MODEL=${draftModelVal}\n`;
-
-      envText += `\nSMTP_HOST=smtp.gmail.com\n`;
-      envText += `SMTP_PORT=587\n`;
-      envText += `SMTP_USER=${smtpUser}\n`;
-      envText += `SMTP_PASS=${cleanPass}\n`;
-      envText += `MAIL_TO=${mailTo}\n`;
-
-      document.getElementById('env_out').textContent = envText;
-
-      // BUILD CONFIG.YAML FILTERS OUTPUT
-      let yamlText = `filters:\n`;
-      yamlText += `  include_titles:\n`;
-      tags.includes.forEach(inc => {
-        yamlText += `    - '${inc.replace(/'/g, "''")}'\n`;
-      });
-      yamlText += `  exclude_titles:\n`;
-      tags.excludes.forEach(exc => {
-        yamlText += `    - '${exc.replace(/'/g, "''")}'\n`;
-      });
-      yamlText += `  locations:\n`;
-      tags.locations.forEach(loc => {
-        yamlText += `    - ${loc}\n`;
-      });
-      yamlText += `  allow_remote: ${document.getElementById('allow_remote').checked}\n`;
-      yamlText += `  max_age_days: ${chkNoLimit ? 'null' : (maxAgeInput.value || 30)}\n\n`;
-      yamlText += `score_threshold: ${parseFloat(document.getElementById('score_threshold').value || 7).toFixed(1)}\n`;
-      yamlText += `max_per_digest: ${parseInt(document.getElementById('max_per_digest').value || 5, 10)}\n`;
-
-      document.getElementById('yaml_out').textContent = yamlText;
-
-      // BUILD COMPANIES.YAML OUTPUT
-      let compYaml = `companies:\n`;
-      companyBoards.forEach(c => {
-        compYaml += `  - {ats: ${c.ats.padEnd(10)}, slug: ${c.slug.padEnd(12)}, name: ${c.name}}\n`;
-      });
-      document.getElementById('companies_out').textContent = compYaml;
-
-      // BUILD CRON OUTPUT
-      const cronLine = `    - cron: "${utcMin} ${utcHour} * * ${cronDaysStr}"`;
-      document.getElementById('cron_out').textContent = cronLine;
-      document.getElementById('cron_human_check').textContent = humanCheck;
-
-      // BUILD PROFILE_JSON OUTPUT
-      const profileRaw = document.getElementById('profile_json_editor').value.trim();
-      document.getElementById('profile_out').textContent = profileRaw || JSON.stringify(defaultProfile, null, 2);
-
-      // Checklist note update
-      const checklistNote = document.getElementById('checklist_email_note');
-      if (cleanPass === '') {
-        checklistNote.innerHTML = '<b>Note:</b> Email step is skipped until <code>SMTP_PASS</code> is filled. Nothing on this page sends an email or talks to any API — GitHub Actions running the cron workflow is what executes the daily job search.';
-      } else {
-        checklistNote.innerHTML = 'Nothing on this page sends an email or talks to any API — GitHub Actions running the cron workflow is what executes the daily job search.';
-      }
-    }
-
-    function copyText(elementId, btnEl) {
-      const text = document.getElementById(elementId).textContent;
-      const setCopied = () => {
-        const orig = btnEl.textContent;
-        btnEl.textContent = 'Copied!';
-        setTimeout(() => { btnEl.textContent = orig; }, 1500);
-      };
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(setCopied).catch(() => {
-          fallbackCopy(text);
-          setCopied();
-        });
-      } else {
-        fallbackCopy(text);
-        setCopied();
-      }
-    }
-
-    function downloadFile(filename, elementId) {
-      const content = document.getElementById(elementId).textContent;
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-    }
-
-    function saveSettingsToLocalStorage(showToast = false) {
-      const settings = {
-        smtp_user: document.getElementById('smtp_user').value,
-        chk_custom_mailto: document.getElementById('chk_custom_mailto').checked,
-        mail_to: document.getElementById('mail_to').value,
-        smtp_pass: document.getElementById('smtp_pass').value,
-        api_key_val: document.getElementById('api_key_val').value,
-        screen_model: document.getElementById('screen_model').value,
-        draft_model: document.getElementById('draft_model').value,
-        allow_remote: document.getElementById('allow_remote').checked,
-        score_threshold: document.getElementById('score_threshold').value,
-        max_per_digest: document.getElementById('max_per_digest').value,
-        max_age_days: document.getElementById('max_age_days').value,
-        chk_no_limit: document.getElementById('chk_no_limit').checked,
-        time_hour: document.getElementById('time_hour').value,
-        time_minute: document.getElementById('time_minute').value,
-        time_ampm: document.getElementById('time_ampm').value,
-        companyBoards: companyBoards,
-        profile_editor: document.getElementById('profile_json_editor').value,
-        tags: tags
-      };
-
-      localStorage.setItem('jobify_user_settings_v2', JSON.stringify(settings));
-
-      if (showToast) {
-        const msg = document.getElementById('save_status_msg');
-        if (msg) {
-          msg.style.display = 'inline';
-          setTimeout(() => { msg.style.display = 'none'; }, 3000);
-        }
-      }
-    }
-
-    function loadSettingsFromLocalStorage() {
-      const raw = localStorage.getItem('jobify_user_settings_v2') || localStorage.getItem('jobify_user_settings');
-      if (!raw) return;
-      try {
-        const s = JSON.parse(raw);
-        if (s.smtp_user !== undefined) document.getElementById('smtp_user').value = s.smtp_user;
-        if (s.chk_custom_mailto !== undefined) {
-          document.getElementById('chk_custom_mailto').checked = s.chk_custom_mailto;
-          document.getElementById('mailto_field_wrapper').style.display = s.chk_custom_mailto ? 'block' : 'none';
-        }
-        if (s.mail_to !== undefined) document.getElementById('mail_to').value = s.mail_to;
-        if (s.smtp_pass !== undefined) document.getElementById('smtp_pass').value = s.smtp_pass;
-        if (s.api_key_val !== undefined) document.getElementById('api_key_val').value = s.api_key_val;
-        if (s.screen_model !== undefined) document.getElementById('screen_model').value = s.screen_model;
-        if (s.draft_model !== undefined) document.getElementById('draft_model').value = s.draft_model;
-        if (s.allow_remote !== undefined) document.getElementById('allow_remote').checked = s.allow_remote;
-        if (s.score_threshold !== undefined) document.getElementById('score_threshold').value = s.score_threshold;
-        if (s.max_per_digest !== undefined) document.getElementById('max_per_digest').value = s.max_per_digest;
-        if (s.max_age_days !== undefined) document.getElementById('max_age_days').value = s.max_age_days;
-        if (s.chk_no_limit !== undefined) {
-          document.getElementById('chk_no_limit').checked = s.chk_no_limit;
-          document.getElementById('max_age_days').disabled = s.chk_no_limit;
-        }
-        if (s.time_hour !== undefined) document.getElementById('time_hour').value = s.time_hour;
-        if (s.time_minute !== undefined) document.getElementById('time_minute').value = s.time_minute;
-        if (s.time_ampm !== undefined) document.getElementById('time_ampm').value = s.time_ampm;
-        if (s.companyBoards) {
-          companyBoards = s.companyBoards;
-          renderCompanies();
-        }
-        if (s.profile_editor) {
-          document.getElementById('profile_json_editor').value = s.profile_editor;
-        }
-        if (s.tags) {
-          if (s.tags.includes) tags.includes = s.tags.includes;
-          if (s.tags.excludes) tags.excludes = s.tags.excludes;
-          if (s.tags.locations) tags.locations = s.tags.locations;
-        }
-      } catch (e) {
-        console.warn("Could not load saved settings", e);
-      }
-    }
-
-    function fallbackCopy(text) {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
-      try {
-        document.execCommand('copy');
-      } catch (err) {}
-      document.body.removeChild(ta);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('profile_json_editor').value = JSON.stringify(defaultProfile, null, 2);
-      loadSettingsFromLocalStorage();
-
-      document.getElementById('smtp_user').addEventListener('input', update);
-      document.getElementById('chk_custom_mailto').addEventListener('change', update);
-      document.getElementById('mail_to').addEventListener('input', update);
-      document.getElementById('smtp_pass').addEventListener('input', update);
-
-      document.getElementById('api_key_val').addEventListener('input', update);
-      document.getElementById('screen_model').addEventListener('input', update);
-      document.getElementById('draft_model').addEventListener('input', update);
-
-      document.getElementById('allow_remote').addEventListener('change', update);
-      document.getElementById('score_threshold').addEventListener('input', update);
-      document.getElementById('max_per_digest').addEventListener('input', update);
-      document.getElementById('max_age_days').addEventListener('input', update);
-      document.getElementById('chk_no_limit').addEventListener('change', update);
-
-      document.getElementById('time_hour').addEventListener('change', update);
-      document.getElementById('time_minute').addEventListener('input', update);
-      document.getElementById('time_ampm').addEventListener('change', update);
-
-      document.getElementById('board_url_input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          parseAndAddCompanyBoard();
-        }
-      });
-
-      // Resume Dropzone Events
-      const dropzone = document.getElementById('resume_dropzone');
-      const fileInput = document.getElementById('resume_file_input');
-
-      dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('dragover');
-      });
-
-      dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('dragover');
-      });
-
-      dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-          handleResumeFileUpload(e.dataTransfer.files[0]);
-        }
-      });
-
-      fileInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-          handleResumeFileUpload(e.target.files[0]);
-        }
-      });
-
-      document.getElementById('profile_json_editor').addEventListener('input', update);
-
-      for (let i = 0; i <= 6; i++) {
-        const chk = document.getElementById(`chk_day_${i}`);
-        if (chk) chk.addEventListener('change', update);
-      }
-
-      setupTagInput('include_input', 'includes');
-      setupTagInput('exclude_input', 'excludes');
-      setupTagInput('location_input', 'locations');
-
-      renderTags('includes', 'includes_chip_box');
-      renderTags('excludes', 'excludes_chip_box');
-      renderTags('locations', 'locations_chip_box');
-
-      renderPresets('includes', 'includes_presets');
-      renderPresets('excludes', 'excludes_presets');
-      renderPresets('locations', 'locations_presets');
-
-      renderCompanies();
-      renderCompanyPresets();
-
-      update();
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLocalStorage();
+      setupTagInputs();
+      setupResumeDropzone();
+      checkWorkflowStateOnLoad();
     });
   </script>
 </body>

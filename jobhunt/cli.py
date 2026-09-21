@@ -6,9 +6,11 @@ A human reads the digest, edits the note, and presses submit.
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -85,11 +87,31 @@ def cmd_profile(args) -> int:
     return 0
 
 
+def _send_notice(args, subject: str, message_text: str) -> None:
+    if not getattr(args, "send", False):
+        return
+    today = datetime.now().strftime("%d %b %Y")
+    html_doc = f"""<!doctype html><html><body style="margin:0;padding:20px;background:#0f1115;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<div style="max-width:640px;margin:0 auto;">
+  <div style="color:#e6e8ec;font-size:22px;font-weight:800;">Your job digest</div>
+  <div style="color:#8b93a3;font-size:13px;margin:6px 0 20px 0;">{today}</div>
+  <div style="background:#171a21;border:1px solid #262b36;border-radius:12px;padding:24px;color:#e6e8ec;font-size:14px;line-height:1.6;">
+    {html.escape(message_text)}
+  </div>
+</div></body></html>"""
+    try:
+        mailer.send(subject, html_doc)
+    except Exception as e:
+        print(f"  ! email notice failed ({type(e).__name__}: {e})")
+
+
 # ---------------------------------------------------------------------- run --
 def cmd_run(args) -> int:
     cfg = _cfg(args.config)
     profile = _load_profile(cfg, allow_sample=args.mock)
     if profile is None:
+        _send_notice(args, "Job Search Alert — Profile missing",
+                     "profile.json is missing or invalid. Please re-upload your resume in the console.")
         return 1
     store = Store(cfg.get("seen_file", "seen.json"))
     filters = cfg.get("filters", {}) or {}
@@ -102,11 +124,15 @@ def cmd_run(args) -> int:
         companies = _cfg(cfg.get("companies_file", "companies.yaml")).get("companies") or []
         if not companies:
             print("companies.yaml has no entries")
+            _send_notice(args, "Nothing scanned today — check your companies list",
+                         "companies.yaml has no entries. Update your target companies in the console.")
             return 1
         jobs = fetch_all(companies)
     scanned = len(jobs)
     if not scanned:
         print("no postings fetched — check the slugs in companies.yaml")
+        _send_notice(args, "Nothing scanned today — check your companies list",
+                     "No postings could be fetched. Check the ATS slugs in companies.yaml.")
         return 1
 
     # ---- 2. prefilter + dedupe (deterministic, free, no LLM)
@@ -124,6 +150,11 @@ def cmd_run(args) -> int:
         subject, doc = digest_mod.build([], scanned, 0, store.stats())
         path = digest_mod.write(doc, cfg.get("digest_file", "out/digest.html"))
         print(f"\nnothing new today. preview: {path}")
+        if args.send:
+            try:
+                mailer.send(subject, doc)
+            except Exception as e:
+                print(f"  ! email failed ({type(e).__name__}: {e})")
         return 0
 
     # ---- 3. screen
@@ -136,6 +167,8 @@ def cmd_run(args) -> int:
             provider, model = resolve("screen")
         except LLMError as e:
             print(f"\n{e}\nNo key? Run with --scorer keyword for an offline dry run.")
+            _send_notice(args, "Job Search Alert — Screening configuration error",
+                         f"Screening provider setup failed: {e}")
             return 1
         print(f"\n[3/5] screening {len(jobs)} jobs via {provider.name}/{model}")
         llm.screen(jobs, profile,
@@ -146,9 +179,11 @@ def cmd_run(args) -> int:
     # If every batch failed, the digest would be empty and — worse — we would
     # record these jobs as seen and never show them again. Bail instead.
     if scorer == "llm" and not any(j.score is not None for j in jobs):
-        print("\n! screening scored nothing: every batch failed.\n"
-              "  Not recording these jobs, so the next run retries them.\n"
-              "  Check the warnings above (bad key, rate limit, wrong model id).")
+        msg = ("Screening scored nothing: every batch failed. "
+               "Not recording these jobs, so the next run retries them. "
+               "Check your API key, rate limits, or model settings.")
+        print(f"\n! {msg}")
+        _send_notice(args, "Job Search Alert — Screening failed", msg)
         return 1
 
     threshold = float(cfg.get("score_threshold", 7.0))

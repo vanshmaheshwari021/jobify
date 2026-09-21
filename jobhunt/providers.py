@@ -183,22 +183,34 @@ class OpenAICompatProvider(Provider):
     """Anything speaking /chat/completions - Groq, Together, OpenRouter, vLLM."""
 
     name = "openai-compatible"
-    required_env = "GROQ_API_KEY"
+    required_env = "LLM_API_KEY"
     default_base = "https://api.groq.com/openai/v1"
-    key_env = "GROQ_API_KEY"
+    key_env = "LLM_API_KEY"
+
+    def preflight(self) -> None:
+        key = (os.getenv(self.required_env) or os.getenv("LLM_API_KEY") or os.getenv("GROQ_API_KEY") or "").strip()
+        if not key:
+            raise LLMError(f"{self.required_env} is not set (see .env.example)")
 
     def complete(self, model: str, system: str, user: str, max_tokens: int,
                  json_mode: bool = False) -> str:
         base = os.getenv("LLM_BASE_URL", self.default_base).rstrip("/")
+        key = (os.getenv(self.key_env) or os.getenv("LLM_API_KEY") or os.getenv("GROQ_API_KEY") or "").strip()
+        if not key:
+            raise LLMError(f"{self.key_env} is not set")
         messages = ([{"role": "system", "content": system}] if system else []) + \
                    [{"role": "user", "content": user}]
         payload: dict[str, Any] = {"model": model, "messages": messages,
                                    "max_tokens": max_tokens, "temperature": 0.2}
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
+        headers = {"Authorization": f"Bearer {key}"}
+        if "openrouter.ai" in base.lower():
+            headers["HTTP-Referer"] = "https://github.com/perryvegehan/PWP_jobhunt"
+            headers["X-Title"] = "PWP_jobhunt"
         r = requests.post(
             f"{base}/chat/completions",
-            headers={"Authorization": f"Bearer {self._env(self.key_env)}"},
+            headers=headers,
             json=payload,
             timeout=TIMEOUT,
         )
@@ -212,6 +224,10 @@ class OpenAICompatProvider(Provider):
 
 class GroqProvider(OpenAICompatProvider):
     name = "groq"
+    required_env = "GROQ_API_KEY"
+    key_env = "GROQ_API_KEY"
+
+
 
 
 class OllamaProvider(Provider):
