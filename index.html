@@ -621,34 +621,66 @@
       renderTags('notInterestedContainer', state.tags.notInterested, true);
     }
 
+    function addTag(tagsArray, rawValue, containerId, isNotInterested) {
+      if (!rawValue) return;
+      const parts = rawValue.split(',').map(s => s.trim()).filter(Boolean);
+      let added = false;
+      parts.forEach(val => {
+        if (val && !tagsArray.some(t => t.toLowerCase() === val.toLowerCase())) {
+          tagsArray.push(val);
+          added = true;
+        }
+      });
+      if (added) {
+        renderTags(containerId, tagsArray, isNotInterested);
+        saveLocalStorage();
+      }
+    }
+
     function setupTagInputs() {
+      const intContainer = document.getElementById('interestedContainer');
       const intInput = document.getElementById('interestedTagsInput');
-      intInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ',') {
-          e.preventDefault();
-          const val = intInput.value.trim().replace(/,/g, '');
-          if (val && !state.tags.interested.some(t => t.toLowerCase() === val.toLowerCase())) {
-            state.tags.interested.push(val);
-            intInput.value = '';
-            updateTagDOM();
-            saveLocalStorage();
-          }
+      const notIntContainer = document.getElementById('notInterestedContainer');
+      const notIntInput = document.getElementById('notInterestedTagsInput');
+
+      intContainer.addEventListener('click', (e) => {
+        if (e.target !== intInput && !e.target.classList.contains('tag-remove')) {
+          intInput.focus();
         }
       });
 
-      const notIntInput = document.getElementById('notInterestedTagsInput');
-      notIntInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ',') {
-          e.preventDefault();
-          const val = notIntInput.value.trim().replace(/,/g, '');
-          if (val && !state.tags.notInterested.some(t => t.toLowerCase() === val.toLowerCase())) {
-            state.tags.notInterested.push(val);
-            notIntInput.value = '';
-            updateTagDOM();
-            saveLocalStorage();
-          }
+      notIntContainer.addEventListener('click', (e) => {
+        if (e.target !== notIntInput && !e.target.classList.contains('tag-remove')) {
+          notIntInput.focus();
         }
       });
+
+      const handleInput = (input, tagsArray, containerId, isNotInterested) => {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ',' || e.key === 'Tab') {
+            if (input.value.trim()) {
+              e.preventDefault();
+              addTag(tagsArray, input.value, containerId, isNotInterested);
+              input.value = '';
+            }
+          }
+        });
+        input.addEventListener('keyup', (e) => {
+          if (e.key === ',' || input.value.includes(',')) {
+            addTag(tagsArray, input.value, containerId, isNotInterested);
+            input.value = '';
+          }
+        });
+        input.addEventListener('blur', () => {
+          if (input.value.trim()) {
+            addTag(tagsArray, input.value, containerId, isNotInterested);
+            input.value = '';
+          }
+        });
+      };
+
+      handleInput(intInput, state.tags.interested, 'interestedContainer', false);
+      handleInput(notIntInput, state.tags.notInterested, 'notInterestedContainer', true);
     }
 
     // Resume drag & drop & text extraction
