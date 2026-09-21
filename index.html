@@ -1087,7 +1087,14 @@ digest_file: out/digest.html
 tracker_csv: out/tracker.csv
 `;
 
-        // 2. Build companies.yaml
+        // 2. Build companies.yaml (Auto-discover via LLM if empty)
+        if (state.companies.length === 0) {
+          if (!state.profile) {
+            state.profile = { target_titles: state.tags.interested, domains: ['software engineering'] };
+          }
+          await autoDiscoverCompanies(apiKey, provider, baseUrl);
+        }
+
         const compEntries = state.companies.length > 0 ? state.companies : [];
         const companiesYaml = `companies:
 ${compEntries.map(c => `  - {ats: ${c.ats}, slug: ${c.slug}, name: "${c.name}"}`).join('\n')}
