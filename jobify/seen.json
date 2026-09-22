@@ -1,0 +1,62 @@
+{
+  "greenhouse:acme-edge:5501001": {
+    "first_seen": "2026-09-18T11:05:29+00:00",
+    "company": "Acme Edge",
+    "title": "Software Engineer II, Distributed Systems",
+    "location": "Bangalore, India",
+    "url": "https://boards.greenhouse.io/acme-edge/jobs/5501001",
+    "score": 8.5,
+    "reason": "[keyword stub] matched: distributed systems, dns, go, http, java",
+    "emailed": false,
+    "applied": false,
+    "applied_on": null
+  },
+  "greenhouse:novapay:7702001": {
+    "first_seen": "2026-09-18T11:05:29+00:00",
+    "company": "Novapay",
+    "title": "Software Development Engineer, Core Infra",
+    "location": "Bengaluru, India",
+    "url": "https://boards.greenhouse.io/novapay/jobs/7702001",
+    "score": 8.5,
+    "reason": "[keyword stub] matched: dns, go, http, java, kafka",
+    "emailed": false,
+    "applied": false,
+    "applied_on": null
+  },
+  "lever:quantstack:a1b2c3d4-1111-4aaa-9999-000000000001": {
+    "first_seen": "2026-09-18T11:05:29+00:00",
+    "company": "Quantstack",
+    "title": "Backend Engineer (Go)",
+    "location": "Bangalore",
+    "url": "https://jobs.lever.co/quantstack/a1b2c3d4-1111-4aaa-9999-000000000001",
+    "score": 7.0,
+    "reason": "[keyword stub] matched: go, grpc, java, kafka, kubernetes",
+    "emailed": false,
+    "applied": false,
+    "applied_on": null
+  },
+  "lever:quantstack:a1b2c3d4-1111-4aaa-9999-000000000003": {
+    "first_seen": "2026-09-18T11:05:29+00:00",
+    "company": "Quantstack",
+    "title": "Site Reliability Engineer",
+    "location": "Remote (India)",
+    "url": "https://jobs.lever.co/quantstack/a1b2c3d4-1111-4aaa-9999-000000000003",
+    "score": 4.8,
+    "reason": "[keyword stub] matched: go, kubernetes, terraform",
+    "emailed": false,
+    "applied": false,
+    "applied_on": null
+  },
+  "ashby:helioscale:9f8e7d6c-2222-4bbb-8888-000000000001": {
+    "first_seen": "2026-09-18T11:05:29+00:00",
+    "company": "Helioscale",
+    "title": "Software Engineer, Networking",
+    "location": "Bengaluru, India",
+    "url": "https://jobs.ashbyhq.com/helioscale/9f8e7d6c-2222-4bbb-8888-000000000001",
+    "score": 4.8,
+    "reason": "[keyword stub] matched: dns, go, http",
+    "emailed": false,
+    "applied": false,
+    "applied_on": null
+  }
+}
