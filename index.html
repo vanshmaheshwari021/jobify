@@ -383,6 +383,30 @@
           <input type="text" id="notInterestedTagsInput" class="tag-input" placeholder="Add exclusion title and press Enter">
         </div>
       </div>
+
+      <div class="field-help" id="companyStatusText" style="margin-top: 10px; color: #60a5fa;">
+        Target companies will be auto-generated from your resume by LLM & verified against ATS APIs.
+      </div>
+    </div>
+
+    <!-- 3. Target Companies Review & Manual Edits -->
+    <div class="section">
+      <div class="section-title">Target Companies Review & Edits</div>
+      <div class="field-help" style="margin-bottom: 14px; color: var(--muted);">
+        Review LLM-suggested companies (<span style="color:#60a5fa;">source: llm</span>) or add your own custom companies (<span style="color:#10b981;">source: manual</span>).
+      </div>
+      <div id="companyListContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;"></div>
+
+      <div class="row-2" style="align-items: flex-end;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="addCompanyInput">Add Custom Company</label>
+          <input type="text" id="addCompanyInput" placeholder="e.g. Scale AI, Sentry, Ramp">
+        </div>
+        <div>
+          <button id="addCompanyBtn" class="btn-primary" style="padding: 10px 16px; background: #2563eb;">+ Add Company</button>
+        </div>
+      </div>
+      <div class="inline-error" id="addCompanyError" style="margin-top: 8px;"></div>
     </div>
 
     <!-- 3. Schedule -->
@@ -886,7 +910,7 @@ Return ONLY a JSON array of plain company names: ["Stripe", "Databricks", "Notio
             if (gh.ok) {
               const data = await gh.json();
               if (data.jobs && data.jobs.length > 0) {
-                verified.push({ ats: 'greenhouse', slug, name });
+                verified.push({ ats: 'greenhouse', slug, name, source: 'llm' });
                 await new Promise(r => setTimeout(r, 150));
                 continue;
               }
@@ -899,7 +923,7 @@ Return ONLY a JSON array of plain company names: ["Stripe", "Databricks", "Notio
             if (lev.ok) {
               const data = await lev.json();
               if (Array.isArray(data) && data.length > 0) {
-                verified.push({ ats: 'lever', slug, name });
+                verified.push({ ats: 'lever', slug, name, source: 'llm' });
                 await new Promise(r => setTimeout(r, 150));
                 continue;
               }
@@ -912,7 +936,7 @@ Return ONLY a JSON array of plain company names: ["Stripe", "Databricks", "Notio
             if (ash.ok) {
               const data = await ash.json();
               if (data.jobs && data.jobs.length > 0) {
-                verified.push({ ats: 'ashby', slug, name });
+                verified.push({ ats: 'ashby', slug, name, source: 'llm' });
                 await new Promise(r => setTimeout(r, 150));
                 continue;
               }
@@ -923,8 +947,92 @@ Return ONLY a JSON array of plain company names: ["Stripe", "Databricks", "Notio
         }
 
         state.companies = verified;
+        renderCompanyList();
       } catch (err) {
         console.warn('Company discovery warning:', err);
+      }
+    }
+
+    function renderCompanyList() {
+      const container = document.getElementById('companyListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      if (!state.companies || state.companies.length === 0) {
+        container.innerHTML = '<div style="color:var(--muted);font-size:12px;">No target companies added yet.</div>';
+        return;
+      }
+      state.companies.forEach((c, idx) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:8px;';
+        const sourceColor = c.source === 'manual' ? '#10b981' : '#60a5fa';
+        item.innerHTML = `<strong>${escapeHtml(c.name)}</strong> <span style="color:var(--muted);font-size:11px;">(${c.ats})</span> <span style="font-size:10px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,0.05);color:${sourceColor};">${c.source || 'llm'}</span> <span class="tag-remove" style="cursor:pointer;font-weight:bold;margin-left:4px;">&times;</span>`;
+        item.querySelector('.tag-remove').addEventListener('click', () => {
+          state.companies.splice(idx, 1);
+          renderCompanyList();
+          saveLocalStorage();
+        });
+        container.appendChild(item);
+      });
+    }
+
+    async function addManualCompany(name) {
+      const errEl = document.getElementById('addCompanyError');
+      errEl.style.display = 'none';
+      const cleanName = name.trim();
+      if (!cleanName) return;
+      const slug = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!slug) return;
+
+      const btn = document.getElementById('addCompanyBtn');
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
+      try {
+        let foundATS = null;
+
+        try {
+          const gh = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`);
+          if (gh.ok) {
+            const data = await gh.json();
+            if (data.jobs && data.jobs.length > 0) foundATS = 'greenhouse';
+          }
+        } catch (e) {}
+
+        if (!foundATS) {
+          try {
+            const lev = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`);
+            if (lev.ok) {
+              const data = await lev.json();
+              if (Array.isArray(data) && data.length > 0) foundATS = 'lever';
+            }
+          } catch (e) {}
+        }
+
+        if (!foundATS) {
+          try {
+            const ash = await fetch(`https://api.ashbyhq.com/posting-api/job-board/${slug}?includeCompensation=true`);
+            if (ash.ok) {
+              const data = await ash.json();
+              if (data.jobs && data.jobs.length > 0) foundATS = 'ashby';
+            }
+          } catch (e) {}
+        }
+
+        if (foundATS) {
+          state.companies.push({ ats: foundATS, slug, name: cleanName, source: 'manual' });
+          document.getElementById('addCompanyInput').value = '';
+          renderCompanyList();
+          saveLocalStorage();
+        } else {
+          errEl.textContent = `Could not verify an active Greenhouse, Lever, or Ashby job board for "${cleanName}".`;
+          errEl.style.display = 'block';
+        }
+      } catch (err) {
+        errEl.textContent = 'Verification error: ' + err.message;
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '+ Add Company';
       }
     }
 
@@ -1103,7 +1211,7 @@ tracker_csv: out/tracker.csv
 
         const compEntries = state.companies.length > 0 ? state.companies : [];
         const companiesYaml = `companies:
-${compEntries.map(c => `  - {ats: ${c.ats}, slug: ${c.slug}, name: "${c.name}"}`).join('\n')}
+${compEntries.map(c => `  - {ats: ${c.ats}, slug: ${c.slug}, name: "${c.name}", source: ${c.source || 'llm'}}`).join('\n')}
 `;
 
         // 3. IST -> UTC Cron
@@ -1238,6 +1346,27 @@ ${compEntries.map(c => `  - {ats: ${c.ats}, slug: ${c.slug}, name: "${c.name}"}`
       loadLocalStorage();
       setupTagInputs();
       setupResumeDropzone();
+      renderCompanyList();
+
+      const addBtn = document.getElementById('addCompanyBtn');
+      if (addBtn) {
+        addBtn.addEventListener('click', () => {
+          const input = document.getElementById('addCompanyInput');
+          if (input && input.value.trim()) {
+            addManualCompany(input.value);
+          }
+        });
+      }
+      const addInput = document.getElementById('addCompanyInput');
+      if (addInput) {
+        addInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            if (addInput.value.trim()) addManualCompany(addInput.value);
+          }
+        });
+      }
+
       checkWorkflowStateOnLoad();
     });
   </script>
