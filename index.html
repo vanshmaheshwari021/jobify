@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PWP_jobhunt — Full Automation Console</title>
+  <title>Jobify — Full Automation Console</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.7.13/dist/browsers/sodium.min.js"></script>
   <style>
@@ -332,7 +332,7 @@
 <body>
   <div class="container">
     <header>
-      <div class="title">PWP_jobhunt Console</div>
+      <div class="title">Jobify Console</div>
       <div id="statusBadge" class="status-badge stopped">Stopped</div>
     </header>
 
@@ -485,7 +485,7 @@
         </div>
         <div class="form-group">
           <label for="ghRepo">Repository Name</label>
-          <input type="text" id="ghRepo" value="PWP_jobhunt">
+          <input type="text" id="ghRepo" value="jobify">
         </div>
       </div>
       <div class="form-group">
@@ -513,7 +513,7 @@
       schedule: { hour: 6, minute: 0, ampm: 'AM', days: [1, 2, 3, 4, 5] },
       thresholds: { scoreThreshold: 7.0, maxPerDigest: 5, maxAgeDays: 30, noLimit: false },
       email: { gmailAddress: '', appPassword: '' },
-      github: { owner: '', repo: 'PWP_jobhunt', token: '' },
+      github: { owner: '', repo: 'jobify', token: '' },
       runState: 'stopped'
     };
 
@@ -797,8 +797,8 @@ Return ONLY a JSON object, no prose, no markdown fences:
             'Authorization': `Bearer ${apiKey}`
           };
           if (base.includes('openrouter.ai')) {
-            headers['HTTP-Referer'] = 'https://github.com/perryvegehan/PWP_jobhunt';
-            headers['X-Title'] = 'PWP_jobhunt';
+            headers['HTTP-Referer'] = 'https://github.com/vanshmaheshwari021/jobify';
+            headers['X-Title'] = 'Jobify';
           }
           const model = base.includes('groq.com') ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
           const res = await fetch(`${base}/chat/completions`, {
