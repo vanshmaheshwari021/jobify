@@ -657,6 +657,12 @@
 
       const handleInput = (input, tagsArray, containerId, isNotInterested) => {
         input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && tagsArray.length > 0) {
+            tagsArray.pop();
+            renderTags(containerId, tagsArray, isNotInterested);
+            saveLocalStorage();
+            return;
+          }
           if (e.key === 'Enter' || e.key === ',' || e.key === 'Tab') {
             if (input.value.trim()) {
               e.preventDefault();
